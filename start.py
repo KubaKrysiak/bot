@@ -6,36 +6,111 @@ import cv2
 import numpy as np
 import pyautogui
 import time
-def enum_windows_callback(hwnd, windows):
-    # Sprawdź, czy okno jest widoczne i ma tytuł "Metin 2"
-    if win32gui.IsWindowVisible(hwnd) and win32gui.GetWindowText(hwnd) == "METIN2":
-        windows.append(hwnd)
+
+class ScreenProperties:
+    def __init__(self):
+        self.screenWidth, self.screenHeight = self.get_screen_size()
+        self.mt2width = 800
+        self.mt2height = 600
+
+    def get_screen_size(self):
+        """
+        zwraca rozdzielczosc monitora
+        """
+        width = win32api.GetSystemMetrics(0)
+        height = win32api.GetSystemMetrics(1)
+        return width, height
+
+    def enum_windows_callback(hwnd, windows):
+        """
+        funkcja pomocnicza
+        """
+        # chyba bez is Window Visible
+        if win32gui.GetWindowText(hwnd) == "METIN2":
+            windows.append(hwnd)
+
+    def update_METIN2_windows(self):
+        """
+        zwraca tablice obiektow MT2window gdzie kazdy obiekt to okienko z zakotwiczonym uchwytem hwnd
+        """
+        #niefajnie 2 windowsy i windows_object
+        windows = []
+        win32gui.EnumWindows(self.enum_windows_callback, windows)
+        windows_objects = []
+        print(f"Znalezione okna o tytule METIN2:")
+        for hwnd in windows:
+            print(f"Okno HWND: {hwnd}")
+            windows_objects.append(Mt2Window(hwnd))
+        return windows_objects
+
+    def get_window_size(self):
+        """
+        zwraca rozmiary pojedynczego okna
+        """
+        rect = win32gui.GetWindowRect(self.hwnd)
+        width = rect[2] - rect[0]
+        height = rect[3] - rect[1]
+        return width,height
+
+class WindowsManager:
+    def __init__(self):
+        self.screen = ScreenProperties()
+        self.windows = self.screen.update_METIN2_windows()
+
+    def calc_win_pos(self):
+        setx, sety = 0, 0
+        for window in windows:
+            restore_window(window)
+            move_and_activate_window(windows[i], setx, sety, width, height)
+            if setx + width > widths:
+                setx = 0
+                sety += height
+                if sety > heights:
+                    print("za duzo okien usun")
+                    break
+            else:
+                setx += width
+            i += 1
+
+    def notify(self, action : str, context : dict):
+        for window in self.windows:
+            window.update(action)
+
+class Mt2Window:
+    def __init__(self, hwnd):
+        self.hwnd = hwnd
+    def get_top_right_coordinates(self):
+        """
+        zwraca gorny prawy rog wspolrzedne
+        """
+        # rect prostokąt okna (left, top, right, bottom)
+        rect = win32gui.GetWindowRect(self.hwnd)
+        left, top, right, bottom = rect
+        top_right_x = right
+        top_right_y = top
+        return top_right_x, top_right_y
+
+    def restore_window(self):
+        """
+        maksymalizuje okno jesli jest ukryte
+        """
+        win32gui.ShowWindow(self.hwnd, win32con.SW_RESTORE)
+
+    def place_mt2window(hwnd, x, y, width, height):
+        """
+        ustawia: rozmiar, focus i pozycje
+        """
+        win32gui.SetWindowPos(hwnd, win32con.HWND_TOPMOST, x, y, width, height, win32con.SWP_NOACTIVATE)
+    def update(self, action):
+        """
+        gdy observer dostanie powiadomienie to wykonuje akcje
+        """
+        if action == "restore_window":
+            self.restore_window()
+        if action == "setup_mt2window_on_screen":
+            self.setup_mt2window_on_screen()
 
 
-def get_top_right_coordinates(hwnd):
-    # Pobierz prostokąt okna (left, top, right, bottom)
-    rect = win32gui.GetWindowRect(hwnd)
-    left, top, right, bottom = rect
-
-    # Współrzędne prawego górnego rogu
-    top_right_x = right
-    top_right_y = top
-
-    return top_right_x, top_right_y
-def find_windows_by_title(title):
-    windows = []
-    win32gui.EnumWindows(enum_windows_callback, windows)
-    return windows
-def restore_window(hwnd):
-    # Przywróć okno, jeśli jest zminimalizowane
-    win32gui.ShowWindow(hwnd, win32con.SW_RESTORE)
-def get_window_size(hwnd):
-    # Pobranie prostokąta okna
-    rect = win32gui.GetWindowRect(hwnd)
-    # Obliczenie szerokości i wysokości
-    width = rect[2] - rect[0]
-    height = rect[3] - rect[1]
-    return width,height
 
 
 def find_image_on_screen(template_path, area, threshold=0.9):
@@ -58,22 +133,8 @@ def find_image_on_screen(template_path, area, threshold=0.9):
         coordinates.append(pt)
 
     return coordinates
-
-
-def get_screen_size():
-    # Pobranie rozmiaru ekranu
-    width = win32api.GetSystemMetrics(0)  # SM_CXSCREEN
-    height = win32api.GetSystemMetrics(1) # SM_CYSCREEN
-    return width, height
-def move_and_activate_window(hwnd, x, y,width,height):
-    win32gui.SetWindowPos(hwnd, win32con.HWND_TOPMOST, x, y, width, height, win32con.SWP_NOACTIVATE)
 if __name__ == "__main__":
-    title_to_find = "METIN2"
-    windows = find_windows_by_title(title_to_find)
-    print(f"Znalezione okna o tytule '{title_to_find}':")
-    for hwnd in windows:
-        print(f"Okno HWND: {hwnd}")
-        restore_window(hwnd)
+
 """
 wiersze=1
 widths, heights = get_screen_size()
@@ -82,26 +143,7 @@ wsp = heights / wiersze / height
 height = int(height * wsp)
 width = int(width * wsp)
 """
-width=800
-height=600
-widths=1960
-heights=1080
-move_and_activate_window(windows[0],0,0,width,height)
-print(f"Width: {width}, Height: {height}")
-i=0
-setx,sety=0,0
-while i<len(windows):
-    restore_window(windows[i])
-    move_and_activate_window(windows[i],setx,sety,width,height)
-    if setx+width>widths:
-        setx=0
-        sety+=height
-        if sety>heights:
-            print("za duzo okien usun")
-            break
-    else:
-        setx+=width
-    i+=1
+
 print(get_top_right_coordinates(windows[0]))
 print(get_top_right_coordinates(windows[1]))
 print(get_window_size(windows[0]))
