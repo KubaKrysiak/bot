@@ -14,13 +14,25 @@ class Configurator:
         name = input("Podaj nazwę konfiguracji: ")
         mt2_width = int(input("Podaj docelową szerokość okna MT2: "))
         mt2_height = int(mt2_width * 0.75)
+        # tu to daj resizowanie
+        def enum_handler(hwnd, _):
+            title = win32gui.GetWindowText(hwnd)
+            if "METIN2" in title:
+                try:
+                    win32gui.ShowWindow(hwnd, win32con.SW_RESTORE)
+                    win32gui.MoveWindow(hwnd, 0, 0, mt2_width, mt2_height, True)
+                    win32gui.SetForegroundWindow(hwnd)
+                except Exception:
+                    pass
+        win32gui.EnumWindows(enum_handler, None)
+        # tu dodaj
         ch = []
         for j in range(6):
             x, y = Configurator.get_click_coordinates(f"Kliknij ch {j + 1}")
             ch.append((x, y))
         ch_ok = Configurator.get_click_coordinates("Kliknij zatwierdzenie ch przycisk (ok)")
-        left, top = Configurator.get_click_coordinates("Kliknij szybko lewy gorny rog wyboru postaci")
-        right, bottom = Configurator.get_click_coordinates("Kliknij szybko prawy dolny rog wyboru postaci")
+        left, top = Configurator.get_click_coordinates("wybor identyfikatora stopu loginu w wyborze postaci kliknij lewy gorny rog id")
+        right, bottom = Configurator.get_click_coordinates("wybor identyfikatora stopu loginu w wyborze postaci kliknij prawy dolny rog id")
         width = right - left
         height = bottom - top
         stop_id = pyautogui.screenshot(region=(left, top, width, height))

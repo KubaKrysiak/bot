@@ -55,43 +55,49 @@ class WindowsManager:
 
             i = 0
             for window in self.windows:
-                sleep(0.15)
+                sleep(0.5)
                 window.click_relative(*self.config.ch[i % 6])
                 i += 1
-                sleep(0.15)
+                sleep(0.5)
                 window.click_relative(*self.config.ch_ok)
-                sleep(0.15)
-                window.click_relative(*self.config.select_btn)
                 if not window.in_game and window.match_at_position(self.config.select_btn, self.config.stop_id):
                     launched_counter += 1
+                    window.in_game = True
+                    sleep(0.1)
+                    window.send_key_input("enter")
+                    sleep(0.1)
+                    window.send_key_input(" ")
+                    print("klikkkkkkkkkkkkkkkkkk")
 
-    def start_fishing(self):
+    def start_fishing(self, timee):
         fish_bots = []
-
-        def bot_task(bot):
-            start_time = time()
-            while time() - start_time < 600:
-                for i in range(3):
-                    bot.take_worm()
-                    sleep(1)
-                    bot.cast_the_fishing_rod()
-                    sleep(5)
-                    while not bot.find_fish():
-                        sleep(0.5)
-                    pos = bot.find_fish()
-                    print(pos)
-                    if pos:
-                        bot.click(pos)
-
-        threads = []
         for window in self.windows:
             bot = FishBot(window)
             fish_bots.append(bot)
-            thread = threading.Thread(target=bot_task, args=(bot,))
-            threads.append(thread)
+        start_time = time()
+        while time() - start_time < timee:
+            for bot in fish_bots:
+                bot.mt2_window.get_focus()
+                sleep(0.3)
+                bot.take_worm()
+            sleep(1)
+            for bot in fish_bots:
+                bot.cast_the_fishing_rod()
+            sleep(3)
+            zlowione = [0]*len(fish_bots)
+            fishhing_time_start = time()
+            # self.windows[0].debug_screenshot()
+            while time() - fishhing_time_start < 18:
+                # tutaj opoznienie?
+                # trzeba zrobic zmienne do kazdego bota osobno narazie bedzie dzialac tylko na 1 musze sie uczyc na inne rzeczy lub dodac multithreading
+                for bot_nr in range(len(fish_bots)):
+                    pos = fish_bots[bot_nr].find_fish()
+                    if pos != None:
+                        fish_bots[bot_nr].click(pos)
+                        zlowione[bot_nr] +=1
+                        sleep(1)
 
-        for thread in threads:
-            thread.start()
 
-        for thread in threads:
-            thread.join()
+
+
+

@@ -1,4 +1,5 @@
 import os
+import psutil
 from time import sleep
 
 from configurator import Configurator
@@ -9,9 +10,9 @@ class UI:
     """pewnie mozna cos zrobic z wm zeby tego nie powtarzac i zmieniac konfiguracje tam ale nwm"""
     def display_menu(self):
         print("1. Stwórz konfigurację")
-        print("2. Włącz bota i autologin (boty mają być w wyborze ch) ")
-        print("3. Włącz fishbota postac ma miec w slotach na dole przynete wedke w reku i stac nad jeziorem")
-        print("4. Usun konfiguracje: ")
+        print("2. Autologin (tyle postaci ile zmiesci sie na ekranie)")
+        print("3. Włącz fishbota (1 postac narazie (brak multithreading / rozszerzenia klas))")
+        print("4. Usun konfiguracje (NIE DZIALA) mozna usunac recznie windows chyba nie pozwala: ")
 
     def create_configuration(self):
         cfg = Configurator.configure()
@@ -49,37 +50,41 @@ class UI:
             print("Nie ma takiej nazwy")
             return None
 
-    def auto_login(self):
-        cfg = self.load_configuration()
+    def auto_login(self, cfg):
         if cfg:
             wm = WindowsManager(cfg)
             wm.place_all_windows()
             wm.automatic_login()
 
-    def launch_fishbots(self):
-        cfg = self.load_configuration()
+    def launch_fishbots(self, cfg):
         if cfg:
+            tim = int(input("Podaj czas lowienia w sekundach: "))
             wm = WindowsManager(cfg)
             wm.place_all_windows()
-            wm.start_fishing()
+            wm.start_fishing(tim)
 
     def run(self):
         while True:
             self.display_menu()
-            option = int(input())
+            option = input()
+            if option == "":
+                print("wczytano '' jeszcze raz")
+                continue
+            option = int(option)
             if option == 1:
                 self.create_configuration()
             elif option == 2:
-                self.auto_login()
-                sleep(12)
-                self.launch_fishbots()
+                cfg = self.load_configuration()
+                self.auto_login(cfg)
             elif option == 3:
-                self.launch_fishbots()
+                cfg = self.load_configuration()
+                self.launch_fishbots(cfg)
             elif option == 4:
                 self.delete_configuration()
 
-
-# __main__ blok
 if __name__ == "__main__":
+    pid = os.getpid()
+    process = psutil.Process(pid)
+    process.nice(psutil.HIGH_PRIORITY_CLASS)
     ui = UI()
     ui.run()
