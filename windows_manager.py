@@ -84,14 +84,18 @@ class WindowsManager:
             for bot in fish_bots:
                 bot.cast_the_fishing_rod()
             zlowione = [0]*len(fish_bots)
-            while zlowione[0]<3:
+            # czekanie na polawienie sie okienka z rybami
+            while not self.windows[0].find_fish_window():
+                sleep(0.1)
+            # lowienie ryb 3x ma zlapac wtedy sie wylacza 
+            while self.windows[0].find_fish_window():
                 for bot_nr in range(len(fish_bots)):
                     pos = fish_bots[bot_nr].find_fish()
                     if pos != None:
                         fish_bots[bot_nr].click(pos)
                         zlowione[bot_nr] +=1
-                        sleep(0.75)
-            sleep(1.5)
+                        sleep(1)
+            sleep(2)
 
 
 

@@ -204,3 +204,43 @@ class Mt2Window:
         # Współrzędne względem anchor
         fish_coords = (screen_x - anch_x, screen_y - anch_y)
         return fish_coords
+
+    def find_fish_window(self):
+        """Checks if a specified color exists in the region defined in find_fish."""
+        anch_x, anch_y = self.get_top_left_coordinates()
+
+        # Calculate the circular region
+        left, top, right, bottom = self.config.circle_region
+        center_x = anch_x + (left[0] + right[0]) // 2
+        center_y = anch_y + (top[1] + bottom[1]) // 2
+        radius = abs((right[0] - left[0]) // 2)
+
+        # Define the region to capture
+        x, y = center_x - radius, center_y - radius
+        scan_size = radius * 2
+
+        # Capture the screen region
+        with mss.mss() as sct:
+            monitor = {"top": y, "left": x, "width": scan_size, "height": scan_size}
+            screenshot = sct.grab(monitor)
+            image_np = np.array(screenshot)
+
+        # Convert to HSV
+        hsv = cv2.cvtColor(image_np, cv2.COLOR_BGRA2BGR)
+        hsv = cv2.cvtColor(hsv, cv2.COLOR_BGR2HSV)
+
+        # Target color in BGR → HSV
+        target_color_bgr = np.uint8([[[216, 145, 49]]])  # Color #3191D8 in BGR
+        target_hsv = cv2.cvtColor(target_color_bgr, cv2.COLOR_BGR2HSV)[0][0]
+        h, s, v = target_hsv
+
+        # Define color range (tolerance)
+        delta_h, delta_s, delta_v = 3, 3, 3
+        lower_bound = np.array([max(h - delta_h, 0), max(s - delta_s, 0), max(v - delta_v, 0)])
+        upper_bound = np.array([min(h + delta_h, 179), min(s + delta_s, 255), min(v + delta_v, 255)])
+
+        # Create a mask for the target color
+        mask = cv2.inRange(hsv, lower_bound, upper_bound)
+
+        # Check if any pixel matches the color
+        return np.any(mask > 0)
