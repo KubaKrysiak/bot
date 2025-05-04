@@ -5,7 +5,7 @@ from time import sleep
 class FishBot:
     def __init__(self, mt2_window):
         self.mt2_window = mt2_window
-        self.worms_count = 400
+        self.worms_count = 0
         self.keyboard_lock = threading.Lock()
 
     def send_key_input(self, key):
@@ -14,12 +14,15 @@ class FishBot:
     def take_worm(self):
         self.mt2_window.get_focus()
         sleep(0.25)
-        if self.worms_count > 0:
-            print("Biorę przynętę...")
-            self.send_key_input("1")
-            self.worms_count -= 1
-        else:
-            print("Brak przynęty!")
+        self.worms_count += 1
+
+        key_to_press = str((self.worms_count // 50) + 1)
+
+        if int(key_to_press) > 9:
+            print("Stop: Przekroczono limit przynęt!")
+            return "stop"
+
+        self.send_key_input(key_to_press)
 
     def cast_the_fishing_rod(self):
         print("Rzucam wędkę...")

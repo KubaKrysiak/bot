@@ -93,8 +93,10 @@ class WindowsManager:
                     pos = fish_bots[bot_nr].find_fish()
                     if pos != None:
                         fish_bots[bot_nr].click(pos)
-                        zlowione[bot_nr] +=1
                         sleep(1)
+            zlowione[bot_nr] +=1
+            if zlowione[bot_nr] == 400:
+                return 0
             sleep(2)
 
 
