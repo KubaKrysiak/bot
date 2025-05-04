@@ -83,19 +83,15 @@ class WindowsManager:
             sleep(1)
             for bot in fish_bots:
                 bot.cast_the_fishing_rod()
-            sleep(3)
             zlowione = [0]*len(fish_bots)
-            fishhing_time_start = time()
-            # self.windows[0].debug_screenshot()
-            while time() - fishhing_time_start < 18:
-                # tutaj opoznienie?
-                # trzeba zrobic zmienne do kazdego bota osobno narazie bedzie dzialac tylko na 1 musze sie uczyc na inne rzeczy lub dodac multithreading
+            while zlowione[0]<3:
                 for bot_nr in range(len(fish_bots)):
                     pos = fish_bots[bot_nr].find_fish()
                     if pos != None:
                         fish_bots[bot_nr].click(pos)
                         zlowione[bot_nr] +=1
-                        sleep(1)
+                        sleep(0.75)
+            sleep(1.5)
 
 
 
