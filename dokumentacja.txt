@@ -23,6 +23,7 @@ Otworzyć cmd jako administrator ( program używa winapi, tworzy foldery, symulu
 pip install -r requirements.txt
 cd ...
 python ui.py
+aby uruchomic program w srodowisku testowym wybrac opcje nr 5 w ui i wybrac konfiguracje test_800x600
 mozliwy blad: _couldNotImportPyScreeze
 trzeba uaktulualnić PIL pip i najlepiej wszystko a jak nie zadziala to sprobowac pip install pyscreeze, potem działa
 
