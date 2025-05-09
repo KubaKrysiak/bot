@@ -1,4 +1,5 @@
 ![image](https://github.com/user-attachments/assets/602f7862-458a-4b17-98ac-77975e583648)
+
 Przed zrobieniem dokumentacji:
 Obowiazkowo
 1. usunac usuwanie konfiguracji z ui i z zbednych funkcji bo nie dziala
