@@ -10,11 +10,11 @@ from windows_manager import WindowsManager
 class UI:
     """pewnie mozna cos zrobic z wm zeby tego nie powtarzac i zmieniac konfiguracje tam ale nwm"""
     def display_menu(self):
-        print("1. Stwórz konfigurację")
+        print("1. Stwórz konfigurację, resize test (pygame) nie dziala, trzeba ustawic szerokosc na 800")
         print("2. Autologin (tyle postaci ile zmiesci sie na ekranie)")
         print("3. Włącz fishbota (1 postac narazie (brak multithreading / rozszerzenia klas))")
         print("4. Usun konfiguracje (NIE DZIALA) mozna usunac recznie windows chyba nie pozwala:")
-        print("5. Uruchom test.py z folderu test w tescie nie dziala resizowanie okna")
+        print("5. Uruchom test.py z folderu test")
 
     def create_configuration(self):
         cfg = Configurator.configure()

@@ -9,8 +9,9 @@ class Config:
         self.screen_height = self.screen.screen_height
         self.mt2_width = mt2_width
         self.mt2_height = mt2_height
-        self.ch = ch
+
         self.ch_ok = ch_ok
+        self.ch = ch
         self.select_btn = select_btn
         self.name = name
         self.stop_id = stop_id
