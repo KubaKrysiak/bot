@@ -17,7 +17,7 @@ biblioteki:
 -pygame
 -keyboard
 
-Uruchomienie mozna nie uruchamiać jest :
+Uruchomienie mozna nie uruchamiać jest prezentacja na youtube:
 git clone ...
 Otworzyć cmd jako administrator ( program używa winapi, tworzy foldery, symuluje wcisniecia klawiszy itp. )
 pip install -r requirements.txt
@@ -26,6 +26,11 @@ python ui.py
 aby uruchomic program w srodowisku testowym wybrac opcje nr 5 w ui i wybrac konfiguracje test_800x600
 mozliwy blad: _couldNotImportPyScreeze
 trzeba uaktulualnić PIL pip i najlepiej wszystko a jak nie zadziala to sprobowac pip install pyscreeze, potem działa
+gdyby program nie przechodzil testu ( roznica monitorow itp.) wybrac opcje nr 1. konfiguratora i skonfigurowac program pod siebie
+
+link do kanalu na którym bedzie prezentacja: https://www.youtube.com/@fajnykanasadsa
+
+
 
 
 
