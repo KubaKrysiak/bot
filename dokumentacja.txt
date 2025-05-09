@@ -2,3 +2,34 @@ Cel:
 
 Celem projektu nie było stworzenie użytecznego narzędzia do użytku zewnętrznego, lecz nauka oraz praktyczne zastosowanie zagadnień związanych z automatyzacją interfejsów graficznych. Projekt został zrealizowany w kontrolowanym środowisku testowym, przy użyciu prostego prototypu gry stworzonego na potrzeby demonstracji. W ramach prac wykorzystano biblioteki takie jak pyautogui, winapi oraz opencv, co pozwoliło na zdobycie doświadczenia w zakresie bardzo prostego rozpoznawania obrazu, obsługi zdarzeń, programowania obiektowego oraz automatycznego sterowania interfejsem użytkownika.
 Projekt nie jest powiązany z żadną grą komercyjną i nie będzie udostępniany ani wykorzystywany poza kontekstem edukacyjnym oraz może być w łatwy sposób rozszerzony do uniwersalnego programu automatyzującego dzięki skalowalnej architekturze aplikacji i programowaniu obiektowym.
+
+Środowisko deweloperskie (na czym był przetestowany):
+- windows 11
+- Python 3.13.3
+biblioteki:
+-opencv-python
+-pyautogui
+-pynput
+-mss
+-psutil
+-pygetwindow
+-pywin32
+-pygame
+-keyboard
+
+Uruchomienie mozna nie uruchamiać jest :
+git clone ...
+Otworzyć cmd jako administrator ( program używa winapi, tworzy foldery, symuluje wcisniecia klawiszy itp. )
+pip install -r requirements.txt
+cd ...
+python ui.py
+mozliwy blad: _couldNotImportPyScreeze
+trzeba uaktulualnić PIL pip i najlepiej wszystko a jak nie zadziala to sprobowac pip install pyscreeze, potem działa
+
+
+
+
+
+
+
+
