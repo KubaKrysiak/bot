@@ -1,5 +1,6 @@
 import os
 import psutil
+import subprocess
 from time import sleep
 
 from configurator import Configurator
@@ -12,7 +13,8 @@ class UI:
         print("1. Stwórz konfigurację")
         print("2. Autologin (tyle postaci ile zmiesci sie na ekranie)")
         print("3. Włącz fishbota (1 postac narazie (brak multithreading / rozszerzenia klas))")
-        print("4. Usun konfiguracje (NIE DZIALA) mozna usunac recznie windows chyba nie pozwala: ")
+        print("4. Usun konfiguracje (NIE DZIALA) mozna usunac recznie windows chyba nie pozwala:")
+        print("5. Uruchom test.py z folderu test w tescie nie dziala resizowanie okna")
 
     def create_configuration(self):
         cfg = Configurator.configure()
@@ -42,13 +44,9 @@ class UI:
         for folder in folders:
             print(folder)
         print("Wpisz odpowiednią nazwę")
-        try:
-            cur_conf = input()
-            cfg = Configurator.load_config(cur_conf)
-            return cfg
-        except:
-            print("Nie ma takiej nazwy")
-            return None
+        cur_conf = input()
+        cfg = Configurator.load_config(cur_conf)
+        return cfg
 
     def auto_login(self, cfg):
         if cfg:
@@ -63,6 +61,16 @@ class UI:
             wm.place_all_windows()
             wm.start_fishing(tim)
 
+    def run_test_script(self):
+        test_script_path = os.path.join(os.getcwd(), "test", "test.py")
+        test_dir = os.path.join(os.getcwd(), "test")
+        if os.path.exists(test_script_path):
+            print(f"Uruchamianie: {test_script_path}")
+            subprocess.Popen(["python", "test.py"], cwd=test_dir)
+            print("test.py uruchomiony w tle.")
+        else:
+            print("Nie znaleziono test/test.py")
+
     def run(self):
         while True:
             self.display_menu()
@@ -70,7 +78,12 @@ class UI:
             if option == "":
                 print("wczytano '' jeszcze raz")
                 continue
-            option = int(option)
+            try:
+                option = int(option)
+            except ValueError:
+                print("Nieprawidłowa opcja.")
+                continue
+
             if option == 1:
                 self.create_configuration()
             elif option == 2:
@@ -81,6 +94,9 @@ class UI:
                 self.launch_fishbots(cfg)
             elif option == 4:
                 self.delete_configuration()
+            elif option == 5:
+                self.run_test_script()
+
 
 if __name__ == "__main__":
     pid = os.getpid()

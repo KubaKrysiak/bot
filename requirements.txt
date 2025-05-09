@@ -5,3 +5,5 @@ mss
 psutil
 pygetwindow
 pywin32
+pygame
+keyboard

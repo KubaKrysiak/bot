@@ -92,9 +92,7 @@ class Mt2Window:
             vk_code, scan_code = value
         else:
             vk_code = value
-            scan_code = None  # Jeśli nie ma scan_code, użyj tylko vk_code
-
-        # Symulacja pełnego naciśnięcia klawisza
+            scan_code = None
         sleep(0.1)
         win32api.keybd_event(vk_code, scan_code if scan_code is not None else 0, 0, 0)
         sleep(0.1)
@@ -103,33 +101,22 @@ class Mt2Window:
 
     def match_at_position(self, center, template_path, confidence=0.85):  # można ustawić niższy próg
         print(f"[INFO] Template path: {template_path}")
-
-        # Wczytaj wzorzec
         template = cv2.imread(template_path)
         if template is None:
             print("[ERROR] Failed to load template.")
             return False
-
         h, w = template.shape[:2]
-
-        # Oblicz współrzędne na ekranie
         anch_x, anch_y = self.get_top_left_coordinates()
         x_center, y_center = center
         x_center += anch_x
         y_center += anch_y
         x1 = int(x_center - w / 2)
         y1 = int(y_center - h / 2)
-
-        # Zrób zrzut ekranu i konwertuj
         screenshot = pyautogui.screenshot(region=(x1, y1, w, h))
         screenshot = cv2.cvtColor(np.array(screenshot), cv2.COLOR_RGB2BGR)
-
-        # Dopasowanie przez TM_CCORR_NORMED
         result = cv2.matchTemplate(screenshot, template, cv2.TM_CCORR_NORMED)
         max_val = cv2.minMaxLoc(result)[1]
         print(f"[DEBUG] Max match value: {max_val:.4f}")
-
-        # Zapisz debugowy zrzut
         debug_path = os.path.join(os.path.dirname(template_path), "debug_image.png")
         cv2.imwrite(debug_path, screenshot)
         print(f"[INFO] Debug image saved to {debug_path}")
@@ -146,101 +133,59 @@ class Mt2Window:
 
     def find_fish(self):
         anch_x, anch_y = self.get_top_left_coordinates()
-
-        # Obliczanie regionu okręgu
         left, top, right, bottom = self.config.circle_region
         center_x = anch_x + (left[0] + right[0]) // 2
         center_y = anch_y + (top[1] + bottom[1]) // 2
         radius = abs((right[0] - left[0]) // 2)
-
-        # Pobieranie obszaru okręgu
         x, y = center_x - radius, center_y - radius
         scan_size = radius * 2
-
-        # Użycie mss do szybszego przechwytywania zrzutu ekranu
         with mss.mss() as sct:
             monitor = {"top": y, "left": x, "width": scan_size, "height": scan_size}
             screenshot = sct.grab(monitor)
             image_np = np.array(screenshot)
-
-        # Konwersja do HSV
         hsv = cv2.cvtColor(image_np, cv2.COLOR_BGRA2BGR)
         hsv = cv2.cvtColor(hsv, cv2.COLOR_BGR2HSV)
-
-        # Kolor docelowy (ryby) w BGR → HSV
-        target_color_bgr = np.uint8([[[123, 88, 53]]])  # Przykładowy kolor ryby
+        target_color_bgr = np.uint8([[[123, 88, 53]]])
         target_hsv = cv2.cvtColor(target_color_bgr, cv2.COLOR_BGR2HSV)[0][0]
         h, s, v = target_hsv
-
-        # Ustawienia zakresu koloru (tolerancje)
         delta_h, delta_s, delta_v = 20, 20, 20
         lower_bound = np.array([max(h - delta_h, 0), max(s - delta_s, 0), max(v - delta_v, 0)])
         upper_bound = np.array([min(h + delta_h, 179), min(s + delta_s, 255), min(v + delta_v, 255)])
-
-        # Maska koloru ryby
         mask = cv2.inRange(hsv, lower_bound, upper_bound)
-
-        # Maska koła
         circle_mask = np.zeros(mask.shape, dtype=np.uint8)
         cv2.circle(circle_mask, (radius, radius), radius, 255, -1)
-
-        # Finalna maska w obrębie koła
         masked_color = cv2.bitwise_and(mask, mask, mask=circle_mask)
-
-        # Znajdujemy wszystkie piksele > 0
         ys, xs = np.where(masked_color > 0)
 
         if xs.size == 0:
             return None
-
-        # Obliczenie centroidu (średniej ze wszystkich punktów)
         mean_x = int(xs.mean())
         mean_y = int(ys.mean())
-
-        # Przeliczenie na układ współrzędnych oryginalnego ekranu
         screen_x = x + mean_x
         screen_y = y + mean_y
-
-        # Współrzędne względem anchor
         fish_coords = (screen_x - anch_x, screen_y - anch_y)
         return fish_coords
 
     def find_fish_window(self):
         """Checks if a specified color exists in the region defined in find_fish."""
         anch_x, anch_y = self.get_top_left_coordinates()
-
-        # Calculate the circular region
         left, top, right, bottom = self.config.circle_region
         center_x = anch_x + (left[0] + right[0]) // 2
         center_y = anch_y + (top[1] + bottom[1]) // 2
         radius = abs((right[0] - left[0]) // 2)
-
-        # Define the region to capture
         x, y = center_x - radius, center_y - radius
         scan_size = radius * 2
-
-        # Capture the screen region
         with mss.mss() as sct:
             monitor = {"top": y, "left": x, "width": scan_size, "height": scan_size}
             screenshot = sct.grab(monitor)
             image_np = np.array(screenshot)
-
-        # Convert to HSV
         hsv = cv2.cvtColor(image_np, cv2.COLOR_BGRA2BGR)
         hsv = cv2.cvtColor(hsv, cv2.COLOR_BGR2HSV)
-
-        # Target color in BGR → HSV
         target_color_bgr = np.uint8([[[216, 145, 49]]])  # Color #3191D8 in BGR
         target_hsv = cv2.cvtColor(target_color_bgr, cv2.COLOR_BGR2HSV)[0][0]
         h, s, v = target_hsv
-
-        # Define color range (tolerance)
         delta_h, delta_s, delta_v = 3, 3, 3
         lower_bound = np.array([max(h - delta_h, 0), max(s - delta_s, 0), max(v - delta_v, 0)])
         upper_bound = np.array([min(h + delta_h, 179), min(s + delta_s, 255), min(v + delta_v, 255)])
-
-        # Create a mask for the target color
         mask = cv2.inRange(hsv, lower_bound, upper_bound)
-
-        # Check if any pixel matches the color
         return np.any(mask > 0)

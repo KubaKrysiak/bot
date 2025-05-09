@@ -1,8 +1,10 @@
-import win32gui
-import threading
-from mt2_window import Mt2Window
-from fish_bot import FishBot
 from time import sleep, time
+
+import win32gui
+
+from fish_bot import FishBot
+from mt2_window import Mt2Window
+
 
 class WindowsManager:
     def __init__(self, config):
@@ -30,18 +32,19 @@ class WindowsManager:
 
     def place_all_windows(self):
         setx, sety = 0, 0
-        for window in self.windows:
-            window.restore_window()
-            window.place_mt2window(setx, sety, self.mt2_width, self.mt2_height)
+        for idx, window in enumerate(self.windows):
+            if sety + self.mt2_height > self.screen_height:
+                break
             if setx + self.mt2_width > self.screen_width:
                 setx = 0
                 sety += self.mt2_height
-                if sety > self.screen_height:
-                    print("Za dużo okien – usuń kilka.")
+                if sety + self.mt2_height > self.screen_height:
                     break
-            else:
-                setx += self.mt2_width
+            window.restore_window()
+            window.place_mt2window(setx, sety, self.mt2_width, self.mt2_height)
+            setx += self.mt2_width
         sleep(3)
+
 
     def automatic_login(self):
         logging_start = time()
@@ -49,10 +52,8 @@ class WindowsManager:
         launched_counter = 0
         while time() - logging_start < max_time:
             # proste zeby dlugo nie robic
-
             if launched_counter == len(self.windows):
                 return 0
-
             i = 0
             for window in self.windows:
                 sleep(0.5)
@@ -60,9 +61,8 @@ class WindowsManager:
                 i += 1
                 sleep(0.5)
                 window.click_relative(*self.config.ch_ok)
-                if not window.in_game and window.match_at_position(self.config.select_btn, self.config.stop_id):
+                if window.match_at_position(self.config.select_btn, self.config.stop_id):
                     launched_counter += 1
-                    window.in_game = True
                     sleep(0.1)
                     window.send_key_input("enter")
                     sleep(0.1)
@@ -83,7 +83,7 @@ class WindowsManager:
             sleep(1)
             for bot in fish_bots:
                 bot.cast_the_fishing_rod()
-            zlowione = [0]*len(fish_bots)
+            zlowione = [0] * len(fish_bots)
             # czekanie na polawienie sie okienka z rybami
             while not self.windows[0].find_fish_window():
                 sleep(0.1)
@@ -94,12 +94,58 @@ class WindowsManager:
                     if pos != None:
                         fish_bots[bot_nr].click(pos)
                         sleep(1)
-            zlowione[bot_nr] +=1
+            zlowione[bot_nr] += 1
             if zlowione[bot_nr] == 400:
                 return 0
             sleep(2)
+"""
+    def start_fishing_pararell(self):
+        # do przetestowania
+        start_time = time()
+        fishing_time = int(input("Podaj czas lowienia w sekundach: "))
+        fish_bots = []
+        for window in self.windows:
+            bot = FishBot(window)
+            fish_bots.append(bot)
+            bot.timer = 0
+            bot.fishing_action = "take_worm"
+        done = 0
+        while True:
+            if time() - start_time > fishing_time:
+                return 0
+            for bot in fish_bots:
+                if done == len(fish_bots):
+                    return 0
+                if bot.zlowione == 200:
+                    continue
+                bot_time = time() - bot.timer
+                if bot.fishing_action == "take_worm":
+                    if bot_time > 2:
+                        # dodanie do tego razem
+                        bot.mt2_window.get_focus()
+                        sleep(0.3)
+                        bot.take_worm()
+                        bot.fishing_action = "cast_the_fishing_worm"
+                elif bot.fishing_action == "cast_the_fishing_worm":
+                    if bot_time > 3:
+                        bot.cast_the_fishing_rod()
+                        bot.fishing_action = "fishing"
+                elif bot.fishing_action == "fishing":
+                    if bot_time > 6:
+                        if not bot.mt2_window.find_fish_window():
+                            bot.fishing_action = "take_worm"
+                            bot_time = time()
+                        else:
+                            pos = bot.find_fish()
+                            if pos != None:
+                                bot.click(pos)
+                                bot.zlowione += 1
+                                if bot.zlowione == 199:
+                                    done+=1
+"""
 
 
 
 
-
+# niefajne z jednej strony dodac to do fisbot a zdrugiej odpowiedzialnosc nei wiem
+# jeszcze n czas
