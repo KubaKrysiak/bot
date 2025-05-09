@@ -142,6 +142,10 @@ class WindowsManager:
                                 bot.zlowione += 1
                                 if bot.zlowione == 199:
                                     done+=1
+            duzo fajnie dziala ale cos timery nie dzialaja a konto do gameforge
+            wojtaczek1237170@gmail.com
+            KochamBbe123!
+            serwer Polska postac shrill mode ma lowienie sorry za glupie nazwy xD kolo ustawien jest
 """
 
 
