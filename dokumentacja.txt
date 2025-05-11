@@ -1,9 +1,10 @@
 Cel:
 
-Celem projektu jest stworzenie programu automatyzowanie aplikacji okienkowych poprzez rozpoznawanie wzorców/kolorów i symulacji kliknięć klawiatury, myszy oraz innych operacji winapi.
+Celem projektu jest stworzenie programu do automatyzowania aplikacji okienkowych poprzez rozpoznawanie wzorców/kolorów i symulacji kliknięć klawiatury, myszy oraz innych operacji winapi.
 Zadaniem nie było stworzenie użytecznego narzędzia do użytku zewnętrznego, lecz nauka oraz praktyczne zastosowanie zagadnień związanych z automatyzacją interfejsów graficznych.
 Projekt został zrealizowany w kontrolowanym środowisku testowym, przy użyciu prostego prototypu gry stworzonego na potrzeby demonstracji.
-Projekt nie jest powiązany z żadną grą komercyjną i nie będzie udostępniany ani wykorzystywany poza kontekstem edukacyjnym oraz może być w łatwy sposób rozszerzony do uniwersalnego programu automatyzującego dzięki skalowalnej architekturze aplikacji i programowaniu obiektowym.
+Projekt nie jest powiązany z żadną grą komercyjną i nie będzie udostępniany ani wykorzystywany poza kontekstem edukacyjnym oraz może być -
+w łatwy sposób rozszerzony do uniwersalnego programu automatyzującego dzięki skalowalnej architekturze aplikacji i programowaniu obiektowym.
 
 Środowisko deweloperskie (na czym był przetestowany):
 - windows 11
