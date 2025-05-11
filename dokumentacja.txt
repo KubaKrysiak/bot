@@ -34,9 +34,9 @@ gdyby program nie przechodzil testu ( roznica monitorow itp.) wybrac opcje nr 1.
 link do kanalu na którym bedzie prezentacja: https://www.youtube.com/@fajnykanasadsa
 
 bugi:
-- lowienie nie dziala na wiekszej ilosci okienek
-- autologin w tescie nie dziala na ostatnim przejsciu (test.py chyba nie przechwytuje nacisniecia 'enter')
-- w test.py program nie zmniena rozdzielczosci ekranu przez komendy wydawane przez bota
+- lowienie nie dziala na wiekszej ilosci okienek ( nigdzie nie dziala nie ma implementacji )
+- autologin w tescie nie dziala na ostatnim przejsciu (test.py chyba nie przechwytuje nacisniecia 'enter') ( w metinie dziala )
+- w test.py program nie zmniena wielkosci ekranu przez komendy wydawane przez bota ( w metinie dziala )
 
 
 
