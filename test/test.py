@@ -1,27 +1,19 @@
-import pygame
 import sys
 import numpy as np
 import cv2
 import random
 import win32gui
 import win32con
-
+import os
+import contextlib
+with open(os.devnull, 'w') as f, contextlib.redirect_stdout(f):
+    import pygame
 # Parametry domyślne
 WIDTH, HEIGHT = 800, 600
 
-# Funkcja do zmiany pozycji i rozmiaru okna
-def place_mt2window(x, y, width, height):
-    global WIDTH, HEIGHT, screen
-    hwnd = pygame.display.get_wm_info()['window']
-    # Aktualizacja pozycji i rozmiaru okna
-    win32gui.SetWindowPos(hwnd, win32con.HWND_TOPMOST, x, y, width, height, win32con.SWP_NOACTIVATE)
-    # Zaktualizuj wymiary w programie i powierzchni rysowania
-    WIDTH, HEIGHT = width, height
-    screen = pygame.display.set_mode((WIDTH, HEIGHT))
-
 # Inicjalizacja
 pygame.init()
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
+screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.RESIZABLE)
 pygame.display.set_caption("METIN2")
 
 # Wczytywanie grafik
@@ -72,23 +64,38 @@ def reset_display():
     hit_message = ''
     return 'Odświeżenie. Wciśnij cyfrę i spację'
 
-# Pozycje kanałów
-total_height = sum(img.get_height() for img in ch_imgs)
-start_y = HEIGHT // 2 - total_height // 2
-ch_rects = []
-x_center = WIDTH // 2
-current_y = start_y
-for img in ch_imgs:
-    rect = img.get_rect()
-    rect.centerx = x_center
-    rect.y = current_y
-    ch_rects.append(rect)
-    current_y += img.get_height()
 
-ch_ok_rect = ch_ok_img.get_rect()
-ch_ok_rect.centerx = WIDTH // 2
-ch_ok_rect.top = start_y + total_height + 50
-postac_rect = postac_img.get_rect(center=(WIDTH//2, HEIGHT//2))
+def update_positions():
+    """Aktualizuje pozycje elementów na podstawie aktualnych wymiarów okna."""
+    global ch_rects, ch_ok_rect, postac_rect, WIDTH, HEIGHT, start_y, x_center
+
+    # Aktualizacja wymiarów
+    WIDTH, HEIGHT = screen.get_size()
+
+    # Pozycje kanałów
+    total_height = sum(img.get_height() for img in ch_imgs)
+    start_y = HEIGHT // 2 - total_height // 2
+    ch_rects = []
+    x_center = WIDTH // 2
+    current_y = start_y
+    for img in ch_imgs:
+        rect = img.get_rect()
+        rect.centerx = x_center
+        rect.y = current_y
+        ch_rects.append(rect)
+        current_y += img.get_height()
+
+    # Pozycja przycisku OK
+    ch_ok_rect = ch_ok_img.get_rect()
+    ch_ok_rect.centerx = WIDTH // 2
+    ch_ok_rect.top = start_y + total_height + 50
+
+    # Pozycja postaci
+    postac_rect = postac_img.get_rect(center=(WIDTH // 2, HEIGHT // 2))
+
+
+# Wywołaj funkcję na początku, aby ustawić początkowe pozycje
+update_positions()
 
 clock = pygame.time.Clock()
 
@@ -97,6 +104,11 @@ while True:
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
+
+        elif event.type == pygame.VIDEORESIZE:
+            # Obsługa zmiany rozmiaru okna
+            screen = pygame.display.set_mode(event.size, pygame.RESIZABLE)
+            update_positions()
 
         elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             # Ignoruj kliknięcia gdy klawisz 's' jest wciśnięty
@@ -144,6 +156,10 @@ while True:
                     fish_dir = [np.cos(angle), np.sin(angle)]
                     frame_counter = 0
                     message = 'Kliknij 3 razy, aby zamknąć'
+
+            elif state == 'wybor_postaci' and event.key == pygame.K_RETURN:
+                state = 'game'
+                message = 'Wciśnij cyfrę 1-9, potem spację'
 
     # Ruch ryby
     if state == 'display_image':

@@ -67,7 +67,7 @@ class WindowsManager:
                     window.send_key_input("enter")
                     sleep(0.1)
                     window.send_key_input(" ")
-                    print("klikkkkkkkkkkkkkkkkkk")
+                    window.click_relative(*self.config.select_btn)
 
     def start_fishing(self, timee):
         fish_bots = []
