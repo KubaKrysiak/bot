@@ -1,27 +1,22 @@
-import pygame
 import sys
 import numpy as np
 import cv2
 import random
 import win32gui
 import win32con
-
+import os
+import contextlib
+with open(os.devnull, 'w') as f, contextlib.redirect_stdout(f):
+    import pygame
+import sys
+import io
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 # Parametry domyślne
 WIDTH, HEIGHT = 800, 600
 
-# Funkcja do zmiany pozycji i rozmiaru okna
-def place_mt2window(x, y, width, height):
-    global WIDTH, HEIGHT, screen
-    hwnd = pygame.display.get_wm_info()['window']
-    # Aktualizacja pozycji i rozmiaru okna
-    win32gui.SetWindowPos(hwnd, win32con.HWND_TOPMOST, x, y, width, height, win32con.SWP_NOACTIVATE)
-    # Zaktualizuj wymiary w programie i powierzchni rysowania
-    WIDTH, HEIGHT = width, height
-    screen = pygame.display.set_mode((WIDTH, HEIGHT))
-
 # Inicjalizacja
 pygame.init()
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
+screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.RESIZABLE)
 pygame.display.set_caption("METIN2")
 
 # Wczytywanie grafik
@@ -72,23 +67,38 @@ def reset_display():
     hit_message = ''
     return 'Odświeżenie. Wciśnij cyfrę i spację'
 
-# Pozycje kanałów
-total_height = sum(img.get_height() for img in ch_imgs)
-start_y = HEIGHT // 2 - total_height // 2
-ch_rects = []
-x_center = WIDTH // 2
-current_y = start_y
-for img in ch_imgs:
-    rect = img.get_rect()
-    rect.centerx = x_center
-    rect.y = current_y
-    ch_rects.append(rect)
-    current_y += img.get_height()
 
-ch_ok_rect = ch_ok_img.get_rect()
-ch_ok_rect.centerx = WIDTH // 2
-ch_ok_rect.top = start_y + total_height + 50
-postac_rect = postac_img.get_rect(center=(WIDTH//2, HEIGHT//2))
+def update_positions():
+    """Aktualizuje pozycje elementów na podstawie aktualnych wymiarów okna."""
+    global ch_rects, ch_ok_rect, postac_rect, WIDTH, HEIGHT, start_y, x_center
+
+    # Aktualizacja wymiarów
+    WIDTH, HEIGHT = screen.get_size()
+
+    # Pozycje kanałów
+    total_height = sum(img.get_height() for img in ch_imgs)
+    start_y = HEIGHT // 2 - total_height // 2
+    ch_rects = []
+    x_center = WIDTH // 2
+    current_y = start_y
+    for img in ch_imgs:
+        rect = img.get_rect()
+        rect.centerx = x_center
+        rect.y = current_y
+        ch_rects.append(rect)
+        current_y += img.get_height()
+
+    # Pozycja przycisku OK
+    ch_ok_rect = ch_ok_img.get_rect()
+    ch_ok_rect.centerx = WIDTH // 2
+    ch_ok_rect.top = start_y + total_height + 50
+
+    # Pozycja postaci
+    postac_rect = postac_img.get_rect(center=(WIDTH // 2, HEIGHT // 2))
+
+
+# Wywołaj funkcję na początku, aby ustawić początkowe pozycje
+update_positions()
 
 clock = pygame.time.Clock()
 
@@ -97,6 +107,11 @@ while True:
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
+
+        elif event.type == pygame.VIDEORESIZE:
+            # Obsługa zmiany rozmiaru okna
+            screen = pygame.display.set_mode(event.size, pygame.RESIZABLE)
+            update_positions()
 
         elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             # Ignoruj kliknięcia gdy klawisz 's' jest wciśnięty
@@ -123,8 +138,14 @@ while True:
             elif state == 'display_image':
                 mouse_click_count += 1
                 clicks.append((mx, my))
-                dist = np.hypot(mx - fish_pos[0], mx - fish_pos[1])
-                hit_message = 'Trafiono!' if dist <= fish_radius else 'Nie trafiono'
+                hitbox_radius = fish_radius + 15
+                fish_x, fish_y = int(fish_pos[0]), int(fish_pos[1])
+                dx = mx - fish_x
+                dy = my - fish_y
+                dist = np.hypot(dx, dy)
+                print(f"Kliknięcie: ({mx}, {my}), Pozycja ryby: ({fish_x}, {fish_y}), dx: {dx}, dy: {dy}, Odległość: {dist}, Hitbox: {hitbox_radius}")
+                hit_message = 'Trafiono!' if dist <= hitbox_radius else 'Nie trafiono'
+                
                 if mouse_click_count >= 3:
                     message = reset_display()
 
@@ -145,14 +166,29 @@ while True:
                     frame_counter = 0
                     message = 'Kliknij 3 razy, aby zamknąć'
 
+            elif state == 'wybor_postaci' and event.key == pygame.K_RETURN:
+                state = 'game'
+                message = 'Wciśnij cyfrę 1-9, potem spację'
+
     # Ruch ryby
     if state == 'display_image':
         pr = get_popup_rect()
         frame_counter += 1
-        fish_speed = 5
+        fish_speed = 3
         if frame_counter >= change_interval:
-            angle = random.uniform(0, 2 * np.pi)
-            fish_dir = [np.cos(angle), np.sin(angle)]
+            center_x, center_y = WIDTH // 2, HEIGHT // 2
+            vector_to_center = [center_x - fish_pos[0], center_y - fish_pos[1]]
+            magnitude = np.hypot(vector_to_center[0], vector_to_center[1])
+            vector_to_center = [vector_to_center[0] / magnitude, vector_to_center[1] / magnitude]
+
+            # Losowy kierunek z większym prawdopodobieństwem skierowanym na środek
+            bias = 0.7  # Im większa wartość, tym większe prawdopodobieństwo ruchu w stronę środka
+            if random.random() < bias:
+                fish_dir = vector_to_center
+            else:
+                angle = random.uniform(0, 2 * np.pi)
+                fish_dir = [np.cos(angle), np.sin(angle)]
+
             frame_counter = 0
         fish_pos[0] += fish_dir[0] * fish_speed
         fish_pos[1] += fish_dir[1] * fish_speed

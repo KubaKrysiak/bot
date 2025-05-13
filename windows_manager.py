@@ -14,6 +14,7 @@ class WindowsManager:
         self.mt2_height = config.mt2_height
         self.screen_width = config.screen_width
         self.screen_height = config.screen_height
+        self.max_catches = 400
 
     @staticmethod
     def _enum_windows_callback(hwnd, windows):
@@ -67,7 +68,7 @@ class WindowsManager:
                     window.send_key_input("enter")
                     sleep(0.1)
                     window.send_key_input(" ")
-                    print("klikkkkkkkkkkkkkkkkkk")
+                    window.click_relative(*self.config.select_btn)
 
     def start_fishing(self, timee):
         fish_bots = []
@@ -76,80 +77,96 @@ class WindowsManager:
             fish_bots.append(bot)
         start_time = time()
         while time() - start_time < timee:
+            # 1 focus
+            # 2 sleep 0.1
+            # 3 take worm
+            # 4 sleep 1
+            # 5 get focus
+            # 6 sleep 0.1
+            # 7 cast the fishing rod
+            # 8 czekaj az nie bedzie okienka z rybą
+            # 9 dopoki okienko z rybką nie zniknie klikaj rybe
+            # 10 sleep 2
+            bot.get_focus()
             for bot in fish_bots:
-                bot.mt2_window.get_focus()
-                sleep(0.3)
-                bot.take_worm()
-            sleep(1)
-            for bot in fish_bots:
-                bot.cast_the_fishing_rod()
-            zlowione = [0] * len(fish_bots)
-            # czekanie na polawienie sie okienka z rybami
-            while not self.windows[0].find_fish_window():
-                sleep(0.1)
-            # lowienie ryb 3x ma zlapac wtedy sie wylacza 
-            while self.windows[0].find_fish_window():
-                for bot_nr in range(len(fish_bots)):
-                    pos = fish_bots[bot_nr].find_fish()
-                    if pos != None:
-                        fish_bots[bot_nr].click(pos)
-                        sleep(1)
-            zlowione[bot_nr] += 1
-            if zlowione[bot_nr] == 400:
-                return 0
-            sleep(2)
-"""
-    def start_fishing_pararell(self):
-        # do przetestowania
-        start_time = time()
-        fishing_time = int(input("Podaj czas lowienia w sekundach: "))
-        fish_bots = []
-        for window in self.windows:
-            bot = FishBot(window)
-            fish_bots.append(bot)
-            bot.timer = 0
-            bot.fishing_action = "take_worm"
-        done = 0
-        while True:
-            if time() - start_time > fishing_time:
-                return 0
-            for bot in fish_bots:
-                if done == len(fish_bots):
-                    return 0
-                if bot.zlowione == 200:
-                    continue
-                bot_time = time() - bot.timer
-                if bot.fishing_action == "take_worm":
-                    if bot_time > 2:
-                        # dodanie do tego razem
-                        bot.mt2_window.get_focus()
-                        sleep(0.3)
-                        bot.take_worm()
-                        bot.fishing_action = "cast_the_fishing_worm"
-                elif bot.fishing_action == "cast_the_fishing_worm":
-                    if bot_time > 3:
-                        bot.cast_the_fishing_rod()
-                        bot.fishing_action = "fishing"
-                elif bot.fishing_action == "fishing":
-                    if bot_time > 6:
-                        if not bot.mt2_window.find_fish_window():
-                            bot.fishing_action = "take_worm"
-                            bot_time = time()
-                        else:
+                if bot.action == 0:
+                    bot.get_focus()
+                    sleep(0.1)
+                    bot.take_worm()
+                    bot.wait(1)
+                elif bot.action == 1 and time() - bot.time_counter > bot.time_acc:
+                    bot.get_focus()
+                    sleep(0.1)
+                    bot.cast_the_fishing_rod()
+                    bot.wait(1)
+                elif bot.action == 2:
+                    if not bot.mt2_window.find_fish_window():
+                        sleep(0.1)
+                    else:
+                        bot.action = 3
+                elif bot.action == 3:
+                    if bot.mt2_window.find_fish_window():
+                        if time() - bot.time_counter > bot.time_acc:
                             pos = bot.find_fish()
                             if pos != None:
+                                bot.get_focus()
+                                sleep(0.01)
                                 bot.click(pos)
-                                bot.zlowione += 1
-                                if bot.zlowione == 199:
-                                    done+=1
-            duzo fajnie dziala ale cos timery nie dzialaja a konto do gameforge
+                                gizmo = bot.action
+                                bot.wait(1)
+                                bot.action = gizmo
+                    else:
+                        bot.zlowione += 1
+                        if bot.zlowione == 400:
+                            # na potem
+                            return 0
+                        bot.wait(2)
+                elif bot.action == 4 and time() - bot.time_counter > bot.time_acc:
+                    bot.action = 0
+
+
+
+
+"""
             wojtaczek1237170@gmail.com
             KochamBbe123!
-            serwer Polska postac shrill mode ma lowienie sorry za glupie nazwy xD kolo ustawien jest
+            1. Pierwsza wersja (action-owa, z wait i action)
+Sterowanie stanem: Każdy bot ma własny stan (action), który decyduje, co ma robić w danym momencie.
+Czas oczekiwania: Używasz bot.wait(x), które ustawia bot.time_counter i bot.time_acc, a potem sprawdzasz if time() - bot.time_counter > bot.time_acc:. To oznacza, że przejście do kolejnej akcji zależy od upływu czasu od ostatniego wait.
+Wielookienkowość: Wszystkie boty są obsługiwane w jednej pętli, ale każdy bot może być w innym stanie (action), więc mogą się rozjeżdżać w czasie.
+W każdej iteracji pętli: Najpierw bot.get_focus() dla jednego bota, potem pętla po wszystkich botach i ich akcje.
+import threading
+
+def bot_fishing(bot, timee):
+    start_time = time()
+    while time() - start_time < timee:
+        bot.get_focus()
+        bot.take_worm()
+        sleep(1)
+        bot.cast_the_fishing_rod()
+        while not bot.mt2_window.find_fish_window():
+            sleep(0.1)
+        while bot.mt2_window.find_fish_window():
+            pos = bot.find_fish()
+            if pos is not None:
+                bot.click(pos)
+                sleep(1)
+        bot.zlowione += 1
+        if bot.zlowione == 400:
+            return
+        sleep(2)
+
+def start_fishing(self, timee):
+    fish_bots = [FishBot(window) for window in self.windows]
+    threads = []
+    for bot in fish_bots:
+        t = threading.Thread(target=bot_fishing, args=(bot, timee))
+        t.start()
+        threads.append(t)
+    for t in threads:
+        t.join()
+
+Dokładnie – i bardzo trafnie zauważyłeś klasyczny problem współdzielenia zasobów w środowisku GUI: fokus okna jest współdzielony globalnie, więc tylko jedno okno może mieć fokus na raz. Jeśli boty będą działać jednocześnie (czy to przez asyncio, czy wątki), mogą sobie ten fokus nadpisywać, co sprawia, że np. kliknięcia trafią nie tam, gdzie trzeba. Dlatego Twoje podejście quasi-asynchroniczne ma sens w tym kontekście.
+pewnie mozna inaczej z multithread
+
 """
-
-
-
-
-# niefajne z jednej strony dodac to do fisbot a zdrugiej odpowiedzialnosc nei wiem
-# jeszcze n czas

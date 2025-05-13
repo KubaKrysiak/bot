@@ -1,6 +1,7 @@
 import os
 import psutil
 import subprocess
+import threading
 from time import sleep
 
 from configurator import Configurator
@@ -68,9 +69,19 @@ class UI:
         test_script_path = os.path.join(os.getcwd(), "test", "test.py")
         test_dir = os.path.join(os.getcwd(), "test")
         if os.path.exists(test_script_path):
-            print(">>> Uruchamiam środowisko testowe...")
-            subprocess.Popen(["python", "test.py"], cwd=test_dir)
-            print(">>> Środowisko testowe uruchomione w tle.")
+            print(f"Uruchamianie: {test_script_path}")
+            def reader():
+                proc = subprocess.Popen(
+                    ["python", "test.py"],
+                    cwd=test_dir,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.STDOUT,
+                    text=True
+                )
+                for line in proc.stdout:
+                    print("[test.py]", line, end="")
+            threading.Thread(target=reader, daemon=True).start()
+            print("test.py uruchomiony w tle.")
         else:
             print("!!! Błąd: Nie znaleziono pliku test/test.py")
 

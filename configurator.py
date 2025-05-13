@@ -7,6 +7,7 @@ from config import Config
 import pygetwindow as gw
 import win32gui
 import win32con
+import shutil
 
 class Configurator:
     @staticmethod
@@ -71,15 +72,13 @@ class Configurator:
 
     @staticmethod
     def delete_config(name):
-        if name == "default":
-            print("Nie możesz usunąć domyślnej konfiguracji.")
-            return
         try:
             path = os.path.join(name)
-            os.rmdir(path)
-            print(f"Usunięto konfigurację: {name}")
+            shutil.rmtree(path)
+            # print(f"Usunięto konfigurację: {name}")  # USUNIĘTO
         except Exception as e:
-            print(f"Nie udało się usunąć konfiguracji {name}: {e}")
+            # print(f"Nie udało się usunąć konfiguracji {name}: {e}")  # USUNIĘTO
+            raise
 
     @staticmethod
     def get_click_coordinates(prompt):
