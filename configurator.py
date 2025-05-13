@@ -51,6 +51,7 @@ class Configurator:
             mt2_width, mt2_height,
             ch, ch_ok, select_btn, name, stop_id, (lcircle, ucircle, rcircle, dcircle)
         )
+        Configurator.save_config(config)
         return config
 
     @staticmethod

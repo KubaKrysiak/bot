@@ -41,8 +41,22 @@ class GUI:
         sys.stdout = TextRedirector(self.log_text)
         sys.stderr = TextRedirector(self.log_text)
 
-        # ESC kończy program nawet bez focusu na GUI
-        threading.Thread(target=lambda: keyboard.wait('esc') or self.root.quit(), daemon=True).start()
+        # Skróty klawiszowe: ESC+S = wyjdź, S+R = restart
+        threading.Thread(target=self._keyboard_shortcuts, daemon=True).start()
+
+    def _keyboard_shortcuts(self):
+        while True:
+            # ESC + S (niezależnie od kolejności)
+            if keyboard.is_pressed('esc') and keyboard.is_pressed('s'):
+                self.root.quit()
+                break
+            # S + R (niezależnie od kolejności)
+            if keyboard.is_pressed('s') and keyboard.is_pressed('r'):
+                self.restart_gui()
+                break
+            # Odświeżanie co 0.1s
+            import time
+            time.sleep(0.1)
 
     def save_state(self):
         state = {
@@ -97,8 +111,8 @@ class GUI:
         ctk.CTkButton(self.left_panel, text="4. Autologin", command=self.auto_login).pack(fill='x', padx=30, pady=5)
         ctk.CTkButton(self.left_panel, text="5. Włącz fishbota", command=self.launch_fishbots).pack(fill='x', padx=30, pady=5)
         ctk.CTkButton(self.left_panel, text="6. Zamknij okna", command=self.close_all_windows).pack(fill='x', padx=30, pady=5)
-        ctk.CTkButton(self.left_panel, text="Restart", command=self.restart_gui).pack(fill='x', padx=30, pady=5)
-        ctk.CTkButton(self.left_panel, text="Wyjdź (escape)", command=self.root.quit).pack(fill='x', padx=30, pady=5)
+        ctk.CTkButton(self.left_panel, text="Restart (skrót: S+R)", command=self.restart_gui).pack(fill='x', padx=30, pady=5)
+        ctk.CTkButton(self.left_panel, text="Wyjdź (skrót: ESC+S)", command=self.root.quit).pack(fill='x', padx=30, pady=5)
 
         # Prawy panel (konsola/logi)
         self.right_panel = ctk.CTkFrame(self.main_frame)

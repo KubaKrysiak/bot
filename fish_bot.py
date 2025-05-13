@@ -44,17 +44,7 @@ class FishBot:
 
     def find_fish(self):
         """Wykrywa obiekt interakcji w oknie (dla kompatybilności wstecznej)"""
-        return self.find_target()
-
-    def find_target(self):
-        """Wykrywa obiekt interakcji w oknie"""
-        print(">>> Wyszukiwanie obiektu interakcji...")
-        result = self.mt2_window.find_color_in_region()
-        if result:
-            print(f">>> Znaleziono obiekt na pozycji: {result}")
-        else:
-            print(">>> Nie wykryto obiektu interakcji")
-        return result
+        return self.mt2_window.find_fish()
 
     def click(self, pos):
         """Wykonuje szybkie kliknięcie w podanej pozycji"""
