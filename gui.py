@@ -96,6 +96,7 @@ class GUI:
         ctk.CTkButton(self.left_panel, text="3. Uruchom test.py", command=self.run_test_script).pack(fill='x', padx=30, pady=5)
         ctk.CTkButton(self.left_panel, text="4. Autologin", command=self.auto_login).pack(fill='x', padx=30, pady=5)
         ctk.CTkButton(self.left_panel, text="5. Włącz fishbota", command=self.launch_fishbots).pack(fill='x', padx=30, pady=5)
+        ctk.CTkButton(self.left_panel, text="6. Zamknij okna", command=self.close_all_windows).pack(fill='x', padx=30, pady=5)
         ctk.CTkButton(self.left_panel, text="Restart", command=self.restart_gui).pack(fill='x', padx=30, pady=5)
         ctk.CTkButton(self.left_panel, text="Wyjdź (escape)", command=self.root.quit).pack(fill='x', padx=30, pady=5)
 
@@ -264,6 +265,21 @@ class GUI:
             self.info(f"Ustawiono czas łowienia: {tim} s")
         else:
             self.info("Nie podano czasu łowienia.")
+
+    def close_all_windows(self):
+        if not self.choose_config_if_needed():
+            return
+        cfg = Configurator.load_config(self.selected_config)
+        if cfg:
+            def worker():
+                wm = WindowsManager(cfg)
+                wm.place_all_windows()
+                try:
+                    wm.close_all_windows()
+                    self.info("Wszystkie okna METIN2 zostały zamknięte.")
+                except Exception as e:
+                    self.error(f"Nie udało się zamknąć okien: {e}")
+            threading.Thread(target=worker, daemon=True).start()
 
 if __name__ == "__main__":
     root = ctk.CTk()

@@ -8,6 +8,8 @@ from ctypes import windll
 import win32api
 import os
 import mss
+import win32process
+import psutil
 
 
 class Mt2Window:
@@ -193,3 +195,23 @@ class Mt2Window:
         upper_bound = np.array([min(h + delta_h, 179), min(s + delta_s, 255), min(v + delta_v, 255)])
         mask = cv2.inRange(hsv, lower_bound, upper_bound)
         return np.any(mask > 0)
+
+    def close_window(self):
+        try:
+            # Pobierz PID procesu powiązanego z tym oknem
+            _, pid = win32process.GetWindowThreadProcessId(self.hwnd)
+            # Spróbuj najpierw WM_CLOSE
+            win32gui.PostMessage(self.hwnd, win32con.WM_CLOSE, 0, 0)
+            # Poczekaj chwilę, czy proces się zamknie
+            import time
+            time.sleep(1.0)
+            # Jeśli proces nadal żyje, zabij go brutalnie
+            proc = psutil.Process(pid)
+            if proc.is_running():
+                proc.terminate()
+                try:
+                    proc.wait(timeout=3)
+                except psutil.TimeoutExpired:
+                    proc.kill()
+        except Exception as e:
+            print(f"Nie udało się zamknąć procesu okna: {e}")

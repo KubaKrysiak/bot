@@ -124,7 +124,13 @@ class WindowsManager:
                 elif bot.action == 4 and time() - bot.time_counter > bot.time_acc:
                     bot.action = 0
 
-
+    def close_all_windows(self):
+        """Zamyka wszystkie okna METIN2 znalezione przez WindowsManager."""
+        for window in self.windows:
+            try:
+                window.close_window()
+            except Exception as e:
+                print(f"Nie udało się zamknąć okna {window}: {e}")
 
 
 """
