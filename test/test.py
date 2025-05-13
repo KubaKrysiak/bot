@@ -6,8 +6,8 @@ import win32gui
 import win32con
 import os
 import contextlib
-with open(os.devnull, 'w') as f, contextlib.redirect_stdout(f):
-    import pygame
+#with open(os.devnull, 'w') as f, contextlib.redirect_stdout(f):
+import pygame
 # Parametry domyślne
 WIDTH, HEIGHT = 800, 600
 
@@ -135,8 +135,14 @@ while True:
             elif state == 'display_image':
                 mouse_click_count += 1
                 clicks.append((mx, my))
-                dist = np.hypot(mx - fish_pos[0], mx - fish_pos[1])
-                hit_message = 'Trafiono!' if dist <= fish_radius else 'Nie trafiono'
+                hitbox_radius = fish_radius + 15
+                fish_x, fish_y = int(fish_pos[0]), int(fish_pos[1])
+                dx = mx - fish_x
+                dy = my - fish_y
+                dist = np.hypot(dx, dy)
+                print(f"Kliknięcie: ({mx}, {my}), Pozycja ryby: ({fish_x}, {fish_y}), dx: {dx}, dy: {dy}, Odległość: {dist}, Hitbox: {hitbox_radius}")
+                hit_message = 'Trafiono!' if dist <= hitbox_radius else 'Nie trafiono'
+                
                 if mouse_click_count >= 3:
                     message = reset_display()
 
@@ -165,10 +171,21 @@ while True:
     if state == 'display_image':
         pr = get_popup_rect()
         frame_counter += 1
-        fish_speed = 5
+        fish_speed = 3
         if frame_counter >= change_interval:
-            angle = random.uniform(0, 2 * np.pi)
-            fish_dir = [np.cos(angle), np.sin(angle)]
+            center_x, center_y = WIDTH // 2, HEIGHT // 2
+            vector_to_center = [center_x - fish_pos[0], center_y - fish_pos[1]]
+            magnitude = np.hypot(vector_to_center[0], vector_to_center[1])
+            vector_to_center = [vector_to_center[0] / magnitude, vector_to_center[1] / magnitude]
+
+            # Losowy kierunek z większym prawdopodobieństwem skierowanym na środek
+            bias = 0.7  # Im większa wartość, tym większe prawdopodobieństwo ruchu w stronę środka
+            if random.random() < bias:
+                fish_dir = vector_to_center
+            else:
+                angle = random.uniform(0, 2 * np.pi)
+                fish_dir = [np.cos(angle), np.sin(angle)]
+
             frame_counter = 0
         fish_pos[0] += fish_dir[0] * fish_speed
         fish_pos[1] += fish_dir[1] * fish_speed

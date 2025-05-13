@@ -16,7 +16,6 @@ class FishBot:
         self.mt2_window.send_key_input(key)
 
     def take_worm(self):
-        self.mt2_window.get_focus()
         sleep(0.25)
         self.worms_count += 1
 
@@ -35,6 +34,12 @@ class FishBot:
 
     def click(self, pos):
         self.mt2_window.click_relative_fast(*pos)
+
+    def find_fish_window(self):
+        return self.mt2_window.find_fish_window()
+    
+    def get_focus(self):
+        self.mt2_window.get_focus()
 
     def update_timer(self):
         # tu nie fajnie

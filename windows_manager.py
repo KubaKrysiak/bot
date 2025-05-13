@@ -14,6 +14,7 @@ class WindowsManager:
         self.mt2_height = config.mt2_height
         self.screen_width = config.screen_width
         self.screen_height = config.screen_height
+        self.max_catches = 400
 
     @staticmethod
     def _enum_windows_callback(hwnd, windows):
@@ -76,28 +77,22 @@ class WindowsManager:
             fish_bots.append(bot)
         start_time = time()
         while time() - start_time < timee:
+            bot.get_focus()
             for bot in fish_bots:
-                bot.mt2_window.get_focus()
-                sleep(0.3)
                 bot.take_worm()
-            sleep(1)
-            for bot in fish_bots:
+                sleep(1)
                 bot.cast_the_fishing_rod()
-            zlowione = [0] * len(fish_bots)
-            # czekanie na polawienie sie okienka z rybami
-            while not self.windows[0].find_fish_window():
-                sleep(0.1)
-            # lowienie ryb 3x ma zlapac wtedy sie wylacza 
-            while self.windows[0].find_fish_window():
-                for bot_nr in range(len(fish_bots)):
-                    pos = fish_bots[bot_nr].find_fish()
+                while not bot.mt2_window.find_fish_window():
+                    sleep(0.1)
+                while bot.mt2_window.find_fish_window():
+                    pos = bot.find_fish()
                     if pos != None:
-                        fish_bots[bot_nr].click(pos)
+                        bot.click(pos)
                         sleep(1)
-            zlowione[bot_nr] += 1
-            if zlowione[bot_nr] == 400:
-                return 0
-            sleep(2)
+                bot.zlowione += 1
+                if bot.zlowione == 400:
+                    return 0
+                sleep(2)
 """
     def start_fishing_pararell(self):
         # do przetestowania
