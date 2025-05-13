@@ -8,9 +8,11 @@ class FishBot:
         self.mt2_window = mt2_window
         self.worms_count = 0
         self.keyboard_lock = threading.Lock()
-        self.timer = time.time()
         self.fishing_action = None
         self.zlowione = 0
+        self.time_acc = 0
+        self.time_counter = 0
+        self.action = 0 
 
     def send_key_input(self, key):
         self.mt2_window.send_key_input(key)
@@ -41,7 +43,8 @@ class FishBot:
     def get_focus(self):
         self.mt2_window.get_focus()
 
-    def update_timer(self):
-        # tu nie fajnie
-        # podczs dodawnia update_timer trzeba dodawac kilka razy funkcje itp.
-        self.mt2_window.update_timer()
+    def wait(self, timee):
+        self.time_counter = time.time()
+        self.time_acc  = timee
+        self.action += 1
+    

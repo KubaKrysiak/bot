@@ -6,8 +6,11 @@ import win32gui
 import win32con
 import os
 import contextlib
-#with open(os.devnull, 'w') as f, contextlib.redirect_stdout(f):
-import pygame
+with open(os.devnull, 'w') as f, contextlib.redirect_stdout(f):
+    import pygame
+import sys
+import io
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 # Parametry domyślne
 WIDTH, HEIGHT = 800, 600
 
