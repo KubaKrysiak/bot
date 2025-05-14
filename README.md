@@ -42,10 +42,16 @@ biblioteki:
 Uruchomienie:
 1.
 pip install -r requirements.txt
+
 uruchomic jako administrator i zobaczyc w notatniku ze to nie haki run_admin.bat
+
 jesli blad: _couldNotImportPyScreeze
+
 pip install --upgrade Pillow pip install pyscreeze
+
 2. zamiast .bat uruchom cmd jako administrator python gui.py
+
+3. 
 Instrukcja konfiguracji:
 
 ![Screenshot 2025-05-14 020507](https://github.com/user-attachments/assets/3f4dffe4-49b4-4111-b505-6571ae709243)
