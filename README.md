@@ -1,3 +1,7 @@
+Do zrobienia:
+Wojtek - przy 4 okienkach na raz są duże opoznienia przy lowieniu
+
+
 Autorzy:
 
 - Jakub Krysiak
@@ -33,14 +37,18 @@ biblioteki:
 -pywin32
 -pygame
 -keyboard
+-customtkinter
 
 Uruchomienie:
-git clone ...
-Otworzyć cmd jako administrator ( program używa winapi, tworzy foldery, symuluje wcisniecia klawiszy itp. )
-pip install -r requirements.txt
-cd ...
-python ui.py
-aby uruchomic program w srodowisku testowym wybrac opcje nr 5 w ui i wybrac konfiguracje test_800x600
-mozliwy blad: _couldNotImportPyScreeze
-trzeba uaktulualnić PIL pip i najlepiej wszystko a jak nie zadziala to sprobowac pip install pyscreeze, potem działa
-gdyby program nie przechodzil testu ( roznica monitorow, rozdzielczosc itp. ) wybrac opcje nr 1. konfiguratora i skonfigurowac program pod swój monitor
+
+-pip install -r requirements.txt
+
+-uruchom jako administrator run_admin.bat
+
+-lub uruchom cmd jako administrator cd sciezka python gui.py
+
+
+3. 
+Instrukcja konfiguracji:
+
+![Screenshot 2025-05-14 020507](https://github.com/user-attachments/assets/3f4dffe4-49b4-4111-b505-6571ae709243)
