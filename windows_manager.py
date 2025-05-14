@@ -107,10 +107,9 @@ class WindowsManager:
                 elif bot.action == 3:
                     if bot.mt2_window.find_fish_window():
                         if time() - bot.time_counter > bot.time_acc:
+                            bot.get_focus()
                             pos = bot.find_fish()
                             if pos != None:
-                                bot.get_focus()
-                                sleep(0.01)
                                 bot.click(pos)
                                 gizmo = bot.action
                                 bot.wait(1)

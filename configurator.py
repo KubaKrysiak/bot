@@ -26,7 +26,7 @@ class Configurator:
                 except Exception:
                     pass
         win32gui.EnumWindows(enum_handler, None)
-        # tu dodaj
+        print("Wciskaj myszką i 's'")
         ch = []
         for j in range(6):
             x, y = Configurator.get_click_coordinates(f"Kliknij ch {j + 1}")
