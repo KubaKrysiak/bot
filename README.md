@@ -41,10 +41,9 @@ biblioteki:
 
 Uruchomienie:
 
-pip install -r requirements.txt
-uruchom jako administrator run_admin.bat
-lub
-uruchom cmd jako administrator cd sciezka python gui.py
+-pip install -r requirements.txt
+-uruchom jako administrator run_admin.bat
+-lub uruchom cmd jako administrator cd sciezka python gui.py
 
 3. 
 Instrukcja konfiguracji:
