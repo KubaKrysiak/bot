@@ -1,5 +1,5 @@
 Do zrobienia:
-Wojtek - przy 4 okienkach na raz opoznienia przy lowieniu sa duze
+Wojtek - przy 4 okienkach na raz są duże opoznienia przy lowieniu
 
 
 Autorzy:
@@ -40,16 +40,11 @@ biblioteki:
 -customtkinter
 
 Uruchomienie:
-1.
+
 pip install -r requirements.txt
-
-uruchomic jako administrator i zobaczyc w notatniku ze to nie haki run_admin.bat
-
-jesli blad: _couldNotImportPyScreeze
-
-pip install --upgrade Pillow pip install pyscreeze
-
-2. zamiast .bat uruchom cmd jako administrator python gui.py
+uruchom jako administrator run_admin.bat
+lub
+uruchom cmd jako administrator cd sciezka python gui.py
 
 3. 
 Instrukcja konfiguracji:
