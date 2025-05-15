@@ -40,14 +40,14 @@ class Configurator:
             "wybor identyfikatora stopu loginu w wyborze postaci kliknij lewy gorny rog id")
         right, bottom = Configurator.get_click_coordinates(
             "wybor identyfikatora stopu loginu w wyborze postaci kliknij prawy dolny rog id")
-        width = right - left
-        height = bottom - top
-        stop_id = pyautogui.screenshot(region=(left, top, width, height))
+        button_width = right - left
+        button_height = bottom - top
+        stop_id = pyautogui.screenshot(region=(left, top, button_width, button_height))
         os.makedirs(name, exist_ok=True)
         path = os.path.join(name, f"stop_id.png")
         stop_id.save(path)
         stop_id = path
-        select_btn = (left + width // 2, top + height // 2)
+        select_btn = (left + button_width // 2, top + button_height // 2)
         print("Konfiguracja fish bota kliknij 4x wewnatrz kola lewa gorna prawa i dolna granice")
         lcircle = Configurator.get_click_coordinates("Kliknij lewo")
         ucircle = Configurator.get_click_coordinates("Kliknij gora")
