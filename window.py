@@ -12,39 +12,23 @@ import win32process
 import psutil
 
 
-class Mt2Window:
+class Window:
     def __init__(self, hwnd, config):
         self.hwnd = hwnd
         self.config = config
-        self.mt2_width = config.mt2_width
-        self.mt2_height = config.mt2_height
+        self.width = config.width
+        self.height = config.height
         self.in_game = False
     def get_top_left_coordinates(self):
         left, top, right, bottom = win32gui.GetWindowRect(self.hwnd)
         return left, top
 
     def restore_window(self):
-        win32gui.ShowWindow(self.hwnd, win32con.SW_RESTORE)
+        win32gui.ShowWindow(self.hwnd, 4)
 
     def get_focus(self):
-        try:
-            if windll.user32.GetForegroundWindow() == self.hwnd:
-                return True
-            placement = win32gui.GetWindowPlacement(self.hwnd)
-            print("focustime")
-            if placement[1] == win32con.SW_SHOWMINIMIZED:
-                win32gui.ShowWindow(self.hwnd, win32con.SW_RESTORE)
-            # optymalizacja
-            windll.user32.ShowWindow(self.hwnd, win32con.SW_SHOW)
-            windll.user32.BringWindowToTop(self.hwnd)
-            windll.user32.SetWindowPos(self.hwnd, -1, 0, 0, 0, 0, 0x0001 | 0x0002)  # HWND_TOPMOST
-            windll.user32.SetWindowPos(self.hwnd, -2, 0, 0, 0, 0, 0x0001 | 0x0002)  # HWND_NOTOPMOST
-            windll.user32.SwitchToThisWindow(self.hwnd, True)
-            return True
-
-        except Exception as e:
-            print(f"Błąd podczas ustawiania focusu: {e}")
-            return False
+        windll.user32.SwitchToThisWindow(self.hwnd, True)
+        return True
 
     def click_relative(self, x, y):
         anch_x, anch_y = self.get_top_left_coordinates()
@@ -53,14 +37,12 @@ class Mt2Window:
         click_y = anch_y + y
         print(f"Kliknięcie w: ({click_x}, {click_y})")
         sleep(0.1)
-        
         win32api.SetCursorPos((click_x, click_y))
         sleep(0.05)
         win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN, 0, 0)
         sleep(0.05)
         win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP, 0, 0)
         sleep(0.05)
-        #
         pyautogui.click(click_x, click_y)
 
     def click_relative_fast(self, x, y):
@@ -68,13 +50,13 @@ class Mt2Window:
         click_x = anch_x + x
         click_y = anch_y + y
         win32api.SetCursorPos((click_x, click_y))
-        sleep(0.015)
+        sleep(0.007)
         win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN, 0, 0)
         sleep(0.007)
         win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP, 0, 0)
 
+
     def send_key_input(self, key):
-        self.get_focus()
         special_keys = {
             ' ': (win32con.VK_SPACE, 0x39),
             '1': (0x31, 0x02),
@@ -129,7 +111,7 @@ class Mt2Window:
 
         return max_val >= confidence
 
-    def place_mt2window(self, x, y, width, height):
+    def place_window(self, x, y, width, height):
         win32gui.SetWindowPos(
             self.hwnd,
             win32con.HWND_TOPMOST,

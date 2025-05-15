@@ -3,12 +3,12 @@ from screen import Screen
 
 class Config:
     # screen jest robiony podczas loadingu config
-    def __init__(self, mt2_width, mt2_height, ch, ch_ok, select_btn, name, stop_id, circle_region):
+    def __init__(self, width, height, ch, ch_ok, select_btn, name, stop_id, circle_region):
         self.screen = Screen()
         self.screen_width = self.screen.screen_width
         self.screen_height = self.screen.screen_height
-        self.mt2_width = mt2_width
-        self.mt2_height = mt2_height
+        self.width = width
+        self.height = height
 
         self.ch_ok = ch_ok
         self.ch = ch
@@ -19,8 +19,8 @@ class Config:
 
     def to_dict(self):
         return {
-            'mt2_width': self.mt2_width,
-            'mt2_height': self.mt2_height,
+            'width': self.width,
+            'height': self.height,
             'ch': self.ch,
             'ch_ok': self.ch_ok,
             'select_btn': self.select_btn,
@@ -32,8 +32,8 @@ class Config:
     @classmethod
     def from_dict(cls, data):
         return cls(
-            mt2_width=data['mt2_width'],
-            mt2_height=data['mt2_height'],
+            width=data['width'],
+            height=data['height'],
             ch=data['ch'],
             ch_ok=data['ch_ok'],
             select_btn=data['select_btn'],

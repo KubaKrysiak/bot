@@ -7,8 +7,8 @@ import time
 
 class FishBot:
     """Klasa automatu wykonującego sekwencję akcji w oknie aplikacji"""
-    def __init__(self, mt2_window):
-        self.mt2_window = mt2_window
+    def __init__(self, window):
+        self.window = window
         self.worms_count = 0
         self.keyboard_lock = threading.Lock()
         self.fishing_action = None
@@ -20,7 +20,7 @@ class FishBot:
     def send_key_input(self, key):
         """Wysyła polecenie klawiatury do okna"""
         print(f">>> Wysyłanie polecenia klawiatury: {key}")
-        self.mt2_window.send_key_input(key)
+        self.window.send_key_input(key)
 
     def take_worm(self):
         sleep(0.25)
@@ -44,18 +44,18 @@ class FishBot:
 
     def find_fish(self):
         """Wykrywa obiekt interakcji w oknie (dla kompatybilności wstecznej)"""
-        return self.mt2_window.find_fish()
+        return self.window.find_fish()
 
     def click(self, pos):
         """Wykonuje szybkie kliknięcie w podanej pozycji"""
         print(f">>> Kliknięcie w pozycji: {pos}")
-        self.mt2_window.click_relative_fast(*pos)
+        self.window.click_relative_fast(*pos)
 
     def find_fish_window(self):
-        return self.mt2_window.find_fish_window()
+        return self.window.find_fish_window()
     
     def get_focus(self):
-        self.mt2_window.get_focus()
+        self.window.get_focus()
 
     def wait(self, timee):
         self.time_counter = time.time()

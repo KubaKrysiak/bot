@@ -4,7 +4,6 @@ import json
 import keyboard
 from pynput import mouse
 from config import Config
-import pygetwindow as gw
 import win32gui
 import win32con
 import shutil
@@ -13,15 +12,15 @@ class Configurator:
     @staticmethod
     def configure():
         name = input("Podaj nazwę konfiguracji: ")
-        mt2_width = int(input("Podaj docelową szerokość okna MT2: "))
-        mt2_height = int(mt2_width * 0.75)
+        width = int(input("Podaj docelową szerokość okna : "))
+        height = int(width * 0.75)
         # tu to daj resizowanie
         def enum_handler(hwnd, _):
             title = win32gui.GetWindowText(hwnd)
             if "METIN2" in title:
                 try:
                     win32gui.ShowWindow(hwnd, win32con.SW_RESTORE)
-                    win32gui.MoveWindow(hwnd, 0, 0, mt2_width, mt2_height, True)
+                    win32gui.MoveWindow(hwnd, 0, 0, width, height, True)
                     win32gui.SetForegroundWindow(hwnd)
                 except Exception:
                     pass
@@ -48,7 +47,7 @@ class Configurator:
         rcircle = Configurator.get_click_coordinates("Kliknij prawo")
         dcircle = Configurator.get_click_coordinates("Kliknij dol")
         config = Config(
-            mt2_width, mt2_height,
+            width, height,
             ch, ch_ok, select_btn, name, stop_id, (lcircle, ucircle, rcircle, dcircle)
         )
         Configurator.save_config(config)
@@ -73,17 +72,12 @@ class Configurator:
 
     @staticmethod
     def delete_config(name):
-        try:
-            path = os.path.join(name)
-            shutil.rmtree(path)
-            # print(f"Usunięto konfigurację: {name}")  # USUNIĘTO
-        except Exception as e:
-            # print(f"Nie udało się usunąć konfiguracji {name}: {e}")  # USUNIĘTO
-            raise
+        path = os.path.join(name)
+        shutil.rmtree(path)
+
 
     @staticmethod
     def get_click_coordinates(prompt):
-        # przetestowac
         print(prompt)
         coords = []
 

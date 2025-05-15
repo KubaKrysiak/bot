@@ -3,15 +3,15 @@ from time import sleep, time
 import win32gui
 
 from fish_bot import FishBot
-from mt2_window import Mt2Window
+from window import Window
 
 
 class WindowsManager:
     def __init__(self, config):
         self.config = config
-        self.windows = self.update_METIN2_windows()
-        self.mt2_width = config.mt2_width
-        self.mt2_height = config.mt2_height
+        self.windows = self.update_windows()
+        self.width = config.width
+        self.height = config.height
         self.screen_width = config.screen_width
         self.screen_height = config.screen_height
         self.max_catches = 400
@@ -21,29 +21,29 @@ class WindowsManager:
         if win32gui.GetWindowText(hwnd) == "METIN2":
             windows.append(hwnd)
 
-    def update_METIN2_windows(self):
+    def update_windows(self):
         windows = []
         win32gui.EnumWindows(self._enum_windows_callback, windows)
         windows_objects = []
         print("Znalezione okna o tytule METIN2:")
         for hwnd in windows:
             print(f"  HWND: {hwnd}")
-            windows_objects.append(Mt2Window(hwnd, self.config))
+            windows_objects.append(Window(hwnd, self.config))
         return windows_objects
 
     def place_all_windows(self):
         setx, sety = 0, 0
         for idx, window in enumerate(self.windows):
-            if sety + self.mt2_height > self.screen_height:
+            if sety + self.height > self.screen_height:
                 break
-            if setx + self.mt2_width > self.screen_width:
+            if setx + self.width > self.screen_width:
                 setx = 0
-                sety += self.mt2_height
-                if sety + self.mt2_height > self.screen_height:
+                sety += self.height
+                if sety + self.height > self.screen_height:
                     break
             window.restore_window()
-            window.place_mt2window(setx, sety, self.mt2_width, self.mt2_height)
-            setx += self.mt2_width
+            window.place_window(setx, sety, self.width, self.height)
+            setx += self.width
         sleep(3)
 
 
@@ -100,12 +100,12 @@ class WindowsManager:
                     bot.cast_the_fishing_rod()
                     bot.wait(1)
                 elif bot.action == 2:
-                    if not bot.mt2_window.find_fish_window():
+                    if not bot.window.find_fish_window():
                         sleep(0.1)
                     else:
                         bot.action = 3
                 elif bot.action == 3:
-                    if bot.mt2_window.find_fish_window():
+                    if bot.window.find_fish_window():
                         if time() - bot.time_counter > bot.time_acc:
                             bot.get_focus()
                             pos = bot.find_fish()
@@ -149,9 +149,9 @@ def bot_fishing(bot, timee):
         bot.take_worm()
         sleep(1)
         bot.cast_the_fishing_rod()
-        while not bot.mt2_window.find_fish_window():
+        while not bot.window.find_fish_window():
             sleep(0.1)
-        while bot.mt2_window.find_fish_window():
+        while bot.window.find_fish_window():
             pos = bot.find_fish()
             if pos is not None:
                 bot.click(pos)
