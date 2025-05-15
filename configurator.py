@@ -1,19 +1,24 @@
-import pyautogui
-import os
 import json
-import keyboard
-from pynput import mouse
-from config import Config
-import win32gui
-import win32con
+import os
 import shutil
+
+import keyboard
+import pyautogui
+import win32con
+import win32gui
+from pynput import mouse
+
+from config import Config
+
 
 class Configurator:
     @staticmethod
-    def configure(window_title):
+    def configure():
         name = input("Podaj nazwę konfiguracji: ")
         width = int(input("Podaj docelową szerokość okna : "))
+        window_title = input("Podaj tytuł okna gry obecnie konfigurowanego: ")
         height = int(width * 0.75)
+
         def enum_handler(hwnd, _):
             title = win32gui.GetWindowText(hwnd)
             if window_title in title:
@@ -23,6 +28,7 @@ class Configurator:
                     win32gui.SetForegroundWindow(hwnd)
                 except Exception:
                     pass
+
         win32gui.EnumWindows(enum_handler, None)
         print("Wciskaj myszką i 's'")
         ch = []
@@ -30,8 +36,10 @@ class Configurator:
             x, y = Configurator.get_click_coordinates(f"Kliknij ch {j + 1}")
             ch.append((x, y))
         ch_ok = Configurator.get_click_coordinates("Kliknij zatwierdzenie ch przycisk (ok)")
-        left, top = Configurator.get_click_coordinates("wybor identyfikatora stopu loginu w wyborze postaci kliknij lewy gorny rog id")
-        right, bottom = Configurator.get_click_coordinates("wybor identyfikatora stopu loginu w wyborze postaci kliknij prawy dolny rog id")
+        left, top = Configurator.get_click_coordinates(
+            "wybor identyfikatora stopu loginu w wyborze postaci kliknij lewy gorny rog id")
+        right, bottom = Configurator.get_click_coordinates(
+            "wybor identyfikatora stopu loginu w wyborze postaci kliknij prawy dolny rog id")
         width = right - left
         height = bottom - top
         stop_id = pyautogui.screenshot(region=(left, top, width, height))
@@ -39,7 +47,7 @@ class Configurator:
         path = os.path.join(name, f"stop_id.png")
         stop_id.save(path)
         stop_id = path
-        select_btn = (left + width//2, top + height//2)
+        select_btn = (left + width // 2, top + height // 2)
         print("Konfiguracja fish bota kliknij 4x wewnatrz kola lewa gorna prawa i dolna granice")
         lcircle = Configurator.get_click_coordinates("Kliknij lewo")
         ucircle = Configurator.get_click_coordinates("Kliknij gora")
@@ -73,7 +81,6 @@ class Configurator:
     def delete_config(name):
         path = os.path.join(name)
         shutil.rmtree(path)
-
 
     @staticmethod
     def get_click_coordinates(prompt):
