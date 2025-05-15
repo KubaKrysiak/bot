@@ -17,7 +17,7 @@ WIDTH, HEIGHT = 800, 600
 # Inicjalizacja
 pygame.init()
 screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.RESIZABLE)
-pygame.display.set_caption("METIN2")
+pygame.display.set_caption("Test")
 
 # Wczytywanie grafik
 ch_imgs = [pygame.image.load(f'ch{i}.png').convert_alpha() for i in range(1, 7)]

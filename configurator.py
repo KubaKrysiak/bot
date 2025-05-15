@@ -10,14 +10,13 @@ import shutil
 
 class Configurator:
     @staticmethod
-    def configure():
+    def configure(window_title):
         name = input("Podaj nazwę konfiguracji: ")
         width = int(input("Podaj docelową szerokość okna : "))
         height = int(width * 0.75)
-        # tu to daj resizowanie
         def enum_handler(hwnd, _):
             title = win32gui.GetWindowText(hwnd)
-            if "METIN2" in title:
+            if window_title in title:
                 try:
                     win32gui.ShowWindow(hwnd, win32con.SW_RESTORE)
                     win32gui.MoveWindow(hwnd, 0, 0, width, height, True)

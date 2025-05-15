@@ -7,8 +7,9 @@ from window import Window
 
 
 class WindowsManager:
-    def __init__(self, config):
+    def __init__(self, config, window_title):
         self.config = config
+        self.window_title = window_title
         self.windows = self.update_windows()
         self.width = config.width
         self.height = config.height
@@ -16,16 +17,15 @@ class WindowsManager:
         self.screen_height = config.screen_height
         self.max_catches = 400
 
-    @staticmethod
-    def _enum_windows_callback(hwnd, windows):
-        if win32gui.GetWindowText(hwnd) == "METIN2":
+    def _enum_windows_callback(self, hwnd, windows):
+        if win32gui.GetWindowText(hwnd) == self.window_title:
             windows.append(hwnd)
 
     def update_windows(self):
         windows = []
         win32gui.EnumWindows(self._enum_windows_callback, windows)
         windows_objects = []
-        print("Znalezione okna o tytule METIN2:")
+        print(f"Znalezione okna o tytule {self.window_title}:")
         for hwnd in windows:
             print(f"  HWND: {hwnd}")
             windows_objects.append(Window(hwnd, self.config))
@@ -33,6 +33,8 @@ class WindowsManager:
 
     def place_all_windows(self):
         setx, sety = 0, 0
+        # Odśwież listę okien przed ustawianiem
+        self.windows = self.update_windows()
         for idx, window in enumerate(self.windows):
             if sety + self.height > self.screen_height:
                 break
@@ -107,9 +109,9 @@ class WindowsManager:
                 elif bot.action == 3:
                     if bot.window.find_fish_window():
                         if time() - bot.time_counter > bot.time_acc:
-                            bot.get_focus()
                             pos = bot.find_fish()
                             if pos != None:
+                                bot.get_focus()
                                 bot.click(pos)
                                 gizmo = bot.action
                                 bot.wait(1)
@@ -124,54 +126,9 @@ class WindowsManager:
                     bot.action = 0
 
     def close_all_windows(self):
-        """Zamyka wszystkie okna METIN2 znalezione przez WindowsManager."""
         for window in self.windows:
             try:
                 window.close_window()
             except Exception as e:
                 print(f"Nie udało się zamknąć okna {window}: {e}")
 
-
-"""
-            wojtaczek1237170@gmail.com
-            KochamBbe123!
-            1. Pierwsza wersja (action-owa, z wait i action)
-Sterowanie stanem: Każdy bot ma własny stan (action), który decyduje, co ma robić w danym momencie.
-Czas oczekiwania: Używasz bot.wait(x), które ustawia bot.time_counter i bot.time_acc, a potem sprawdzasz if time() - bot.time_counter > bot.time_acc:. To oznacza, że przejście do kolejnej akcji zależy od upływu czasu od ostatniego wait.
-Wielookienkowość: Wszystkie boty są obsługiwane w jednej pętli, ale każdy bot może być w innym stanie (action), więc mogą się rozjeżdżać w czasie.
-W każdej iteracji pętli: Najpierw bot.get_focus() dla jednego bota, potem pętla po wszystkich botach i ich akcje.
-import threading
-
-def bot_fishing(bot, timee):
-    start_time = time()
-    while time() - start_time < timee:
-        bot.get_focus()
-        bot.take_worm()
-        sleep(1)
-        bot.cast_the_fishing_rod()
-        while not bot.window.find_fish_window():
-            sleep(0.1)
-        while bot.window.find_fish_window():
-            pos = bot.find_fish()
-            if pos is not None:
-                bot.click(pos)
-                sleep(1)
-        bot.zlowione += 1
-        if bot.zlowione == 400:
-            return
-        sleep(2)
-
-def start_fishing(self, timee):
-    fish_bots = [FishBot(window) for window in self.windows]
-    threads = []
-    for bot in fish_bots:
-        t = threading.Thread(target=bot_fishing, args=(bot, timee))
-        t.start()
-        threads.append(t)
-    for t in threads:
-        t.join()
-
-Dokładnie – i bardzo trafnie zauważyłeś klasyczny problem współdzielenia zasobów w środowisku GUI: fokus okna jest współdzielony globalnie, więc tylko jedno okno może mieć fokus na raz. Jeśli boty będą działać jednocześnie (czy to przez asyncio, czy wątki), mogą sobie ten fokus nadpisywać, co sprawia, że np. kliknięcia trafią nie tam, gdzie trzeba. Dlatego Twoje podejście quasi-asynchroniczne ma sens w tym kontekście.
-pewnie mozna inaczej z multithread
-
-"""
