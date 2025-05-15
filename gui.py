@@ -38,12 +38,49 @@ class GUI:
         self.load_state()
         self.create_widgets()
 
-        # Przechwyć sys.stdout i sys.stderr
         sys.stdout = TextRedirector(self.log_text)
         sys.stderr = TextRedirector(self.log_text)
 
-        # Skróty klawiszowe: ESC+S = wyjdź, S+R = restart
         threading.Thread(target=self._keyboard_shortcuts, daemon=True).start()
+        
+
+    def create_widgets(self):
+        self.main_frame = ctk.CTkFrame(self.root)
+        self.main_frame.pack(fill='both', expand=True, padx=10, pady=10)
+
+        self.left_panel = ctk.CTkFrame(self.main_frame)
+        self.left_panel.pack(side='left', fill='y', padx=(0, 10), pady=0, expand=False)
+
+        self.info_label = ctk.CTkLabel(self.left_panel, text="", font=("Segoe UI", 14, "bold"))
+        self.info_label.pack(fill='x', pady=(10, 15))
+        self.update_info_label()
+
+        ctk.CTkButton(self.left_panel, text="Wybierz konfigurację", command=self.choose_config).pack(fill='x', padx=30, pady=5)
+        ctk.CTkButton(self.left_panel, text="Ustaw czas łowienia", command=self.choose_fishing_time).pack(fill='x', padx=30, pady=5)
+        ctk.CTkButton(self.left_panel, text="Ustaw tytuł okna", command=self.choose_window_title).pack(fill='x', padx=30, pady=5)
+        ctk.CTkButton(self.left_panel, text="1. Stwórz konfigurację", command=self.create_configuration).pack(fill='x', padx=30, pady=5)
+        ctk.CTkButton(self.left_panel, text="2. Usuń konfigurację", command=self.delete_configuration).pack(fill='x', padx=30, pady=5)
+        ctk.CTkButton(self.left_panel, text="3. Uruchom test.py", command=self.run_test_script).pack(fill='x', padx=30, pady=5)
+        ctk.CTkButton(self.left_panel, text="4. Autologin", command=self.auto_login).pack(fill='x', padx=30, pady=5)
+        ctk.CTkButton(self.left_panel, text="5. Włącz fishbota", command=self.launch_fishbots).pack(fill='x', padx=30, pady=5)
+        ctk.CTkButton(self.left_panel, text="6. Zamknij okna", command=self.close_all_windows).pack(fill='x', padx=30, pady=5)
+        ctk.CTkButton(self.left_panel, text="Restart", command=self.restart_gui).pack(fill='x', padx=30, pady=5)
+        ctk.CTkButton(self.left_panel, text="Wyjdź (escape)", command=self.root.quit).pack(fill='x', padx=30, pady=5)
+
+        # Prawy panel (konsola/logi)
+        self.right_panel = ctk.CTkFrame(self.main_frame)
+        self.right_panel.pack(side='left', fill='both', expand=True, padx=(0, 0), pady=0)
+
+        self.log_text = ctk.CTkTextbox(self.right_panel, height=200, font=("Consolas", 13))
+        self.log_text.pack(fill='both', expand=True, padx=20, pady=(10, 20))
+    
+    def update_info_label(self):
+        text = (
+            f"Wybrana konfiguracja: {self.selected_config or 'Brak'}\n"
+            f"Czas łowienia: {self.fishing_time or 'Brak'}\n"
+            f"Tytuł okna: {self.window_title or 'Brak'}"
+        )
+        self.info_label.configure(text=text)
 
     def _keyboard_shortcuts(self):
         while True:
@@ -80,59 +117,29 @@ class GUI:
                 self.selected_config = None
                 self.fishing_time = None
                 self.window_title = None
-
-    def update_info_label(self):
-        text = (
-            f"Wybrana konfiguracja: {self.selected_config or 'Brak'}\n"
-            f"Czas łowienia: {self.fishing_time or 'Brak'}\n"
-            f"Tytuł okna: {self.window_title or 'Brak'}"
-        )
-        self.info_label.configure(text=text)
-
-    def restart_gui(self):
-        print("Restartuję GUI i przerywam wszystkie akcje...")
-        self.root.after(100, self._do_restart)
-
-    def _do_restart(self):
-        os.execl(sys.executable, sys.executable, *sys.argv)
-
-    def create_widgets(self):
-        # Układ z ramką na lewą część (przyciski) i prawą (konsola)
-        self.main_frame = ctk.CTkFrame(self.root)
-        self.main_frame.pack(fill='both', expand=True, padx=10, pady=10)
-
-        # Lewy panel (przyciski)
-        self.left_panel = ctk.CTkFrame(self.main_frame)
-        self.left_panel.pack(side='left', fill='y', padx=(0, 10), pady=0, expand=False)
-
-        self.info_label = ctk.CTkLabel(self.left_panel, text="", font=("Segoe UI", 14, "bold"))
-        self.info_label.pack(fill='x', pady=(10, 15))
-        self.update_info_label()
-
-        ctk.CTkButton(self.left_panel, text="Wybierz konfigurację", command=self.choose_config).pack(fill='x', padx=30, pady=5)
-        ctk.CTkButton(self.left_panel, text="Ustaw czas łowienia", command=self.choose_fishing_time).pack(fill='x', padx=30, pady=5)
-        ctk.CTkButton(self.left_panel, text="Ustaw tytuł okna", command=self.choose_window_title).pack(fill='x', padx=30, pady=5)
-        ctk.CTkButton(self.left_panel, text="1. Stwórz konfigurację", command=self.create_configuration).pack(fill='x', padx=30, pady=5)
-        ctk.CTkButton(self.left_panel, text="2. Usuń konfigurację", command=self.delete_configuration).pack(fill='x', padx=30, pady=5)
-        ctk.CTkButton(self.left_panel, text="3. Uruchom test.py", command=self.run_test_script).pack(fill='x', padx=30, pady=5)
-        ctk.CTkButton(self.left_panel, text="4. Autologin", command=self.auto_login).pack(fill='x', padx=30, pady=5)
-        ctk.CTkButton(self.left_panel, text="5. Włącz fishbota", command=self.launch_fishbots).pack(fill='x', padx=30, pady=5)
-        ctk.CTkButton(self.left_panel, text="6. Zamknij okna", command=self.close_all_windows).pack(fill='x', padx=30, pady=5)
-        ctk.CTkButton(self.left_panel, text="Restart", command=self.restart_gui).pack(fill='x', padx=30, pady=5)
-        ctk.CTkButton(self.left_panel, text="Wyjdź (escape)", command=self.root.quit).pack(fill='x', padx=30, pady=5)
-
-        # Prawy panel (konsola/logi)
-        self.right_panel = ctk.CTkFrame(self.main_frame)
-        self.right_panel.pack(side='left', fill='both', expand=True, padx=(0, 0), pady=0)
-
-        self.log_text = ctk.CTkTextbox(self.right_panel, height=200, font=("Consolas", 13))
-        self.log_text.pack(fill='both', expand=True, padx=20, pady=(10, 20))
     
+    def load_configuration(self):
+        directory_path = os.getcwd()
+        folders = [f for f in os.listdir(directory_path) if os.path.isdir(os.path.join(directory_path, f))]
+        if not folders:
+            print("Brak konfiguracji do wyboru.")
+            return None
+        conf = simpledialog.askstring("Wczytaj konfigurację", f"Wybierz konfigurację:\n{', '.join(folders)}")
+        if conf:
+            self.selected_config = conf
+            self.save_state()
+            self.update_info_label()
+            return Configurator.load_config(conf)
+        return None
+    
+
     def create_configuration(self):
         def worker():
-            Configurator.configure(window_title=self.window_title)
-            input("Naciśnij Enter, aby zamknąć...")
-            print("Zakończono konfigurację (sprawdź logi i pliki).")
+            subprocess.run(
+                [sys.executable, "-c", "from configurator import Configurator; Configurator.configure(); input('Naciśnij Enter, aby zamknąć...')"],
+                creationflags=subprocess.CREATE_NEW_CONSOLE if os.name == "nt" else 0
+            )
+            self.info("Zakończono konfigurację (sprawdź logi i pliki).")
         threading.Thread(target=worker, daemon=True).start()
 
     def delete_configuration(self):
@@ -157,23 +164,8 @@ class GUI:
         else:
             print("Nie wybrano konfiguracji do usunięcia.")
 
-    def load_configuration(self):
-        directory_path = os.getcwd()
-        folders = [f for f in os.listdir(directory_path) if os.path.isdir(os.path.join(directory_path, f))]
-        if not folders:
-            print("Brak konfiguracji do wyboru.")
-            return None
-        conf = simpledialog.askstring("Wczytaj konfigurację", f"Wybierz konfigurację:\n{', '.join(folders)}")
-        if conf:
-            self.selected_config = conf
-            self.save_state()
-            self.update_info_label()
-            return Configurator.load_config(conf)
-        return None
 
     def choose_config(self):
-        if self.selected_config:
-            return True
         directory_path = os.getcwd()
         folders = [f for f in os.listdir(directory_path)
                    if os.path.isdir(os.path.join(directory_path, f)) and not f.startswith('.') and not f.startswith('_')]
@@ -197,8 +189,6 @@ class GUI:
             return False
 
     def choose_fishing_time(self):
-        if self.fishing_time:
-            return True
         tim = simpledialog.askinteger("Czas łowienia", "Podaj czas łowienia w sekundach:")
         if tim:
             self.fishing_time = tim
@@ -222,39 +212,6 @@ class GUI:
             print("Nie podano tytułu okna.")
             return False
 
-    # Przed uruchomieniem automatyzacji, wymuś wybór tytułu okna:
-    def auto_login(self):
-        if not self.choose_config():
-            return
-        if not self.window_title:
-            if not self.choose_window_title():
-                return
-        cfg = Configurator.load_config(self.selected_config)
-        if cfg:
-            def worker():
-                wm = WindowsManager(cfg, self.window_title)
-                wm.place_all_windows()
-                wm.automatic_login()
-                print("Autologin uruchomiony!")
-            threading.Thread(target=worker, daemon=True).start()
-
-    def launch_fishbots(self):
-        if not self.choose_config():
-            return
-        if not self.choose_fishing_time():
-            return
-        if not self.window_title:
-            if not self.choose_window_title():
-                return
-        cfg = Configurator.load_config(self.selected_config)
-        tim = self.fishing_time
-        def worker():
-            wm = WindowsManager(cfg, self.window_title)
-            wm.place_all_windows()
-            wm.start_fishing(tim)
-            print("Fishbot uruchomiony!")
-        threading.Thread(target=worker, daemon=True).start()
-
     def run_test_script(self):
         test_script_path = os.path.join(os.getcwd(), "test", "test.py")
         test_dir = os.path.join(os.getcwd(), "test")
@@ -274,6 +231,48 @@ class GUI:
             print("test.py uruchomiony w tle")
         else:
             print("Nie znaleziono test/test.py")
+
+    
+        def auto_login(self):
+        if not self.selected_config:
+            if not self.choose_config():
+                return
+        if not self.window_title:
+            if not self.choose_window_title():
+                return
+        cfg = Configurator.load_config(self.selected_config)
+        if cfg:
+            def worker():
+                wm = WindowsManager(cfg, self.window_title)
+                wm.place_all_windows()
+                wm.automatic_login()
+                print("Autologin uruchomiony!")
+            threading.Thread(target=worker, daemon=True).start()
+
+    def launch_fishbots(self):
+        if not self.selected_config:
+            if not self.choose_config():
+                return
+        if not self.fishing_time:
+            if not self.choose_fishing_time():
+                return
+        if not self.window_title:
+            if not self.choose_window_title():
+                return
+        cfg = Configurator.load_config(self.selected_config)
+        tim = self.fishing_time
+        def worker():
+            wm = WindowsManager(cfg, self.window_title)
+            wm.place_all_windows()
+            wm.start_fishing(tim)
+            print("Fishbot uruchomiony!")
+        threading.Thread(target=worker, daemon=True).start()
+
+
+    def restart_gui(self):
+        print("Restartuję GUI i przerywam wszystkie akcje...")
+        self.root.after(100, os.execl(sys.executable, sys.executable, *sys.argv))
+
 
     def close_all_windows(self):
         if not self.choose_config():
