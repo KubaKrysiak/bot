@@ -1,4 +1,5 @@
 from time import time
+from commands import KeyInputCommand, ClickFastCommand
 
 
 class FishBot:
@@ -10,10 +11,12 @@ class FishBot:
         self.time_counter = 0
 
     def take_worm(self):
-        self.ws.send_key_input(str(8 - (self.worms_count // 400) + 1))
+        cmd = KeyInputCommand(self.ws, str(8 - (self.worms_count // 400) + 1))
+        self.ws.execute_command(cmd)
 
     def cast_the_fishing_rod(self):
-        self.ws.send_key_input("space")
+        cmd = KeyInputCommand(self.ws, "space")
+        self.ws.execute_command(cmd)
 
     def find_fish_window(self):
         return self.ws.find_color((216, 145, 49))
@@ -24,7 +27,8 @@ class FishBot:
     def click_fish(self):
         pos = self.find_fish()
         if pos:
-            self.ws.send_click_fast(*pos)
+            cmd = ClickFastCommand(self.ws, *pos)
+            self.ws.execute_command(cmd)
             return True
         return False
 

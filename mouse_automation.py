@@ -6,7 +6,7 @@ from time import sleep
 class MouseAutomation:
     # https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-mouse_event
 
-    def __init__(self, fast_delay=0.007):
+    def __init__(self, fast_delay=0.01):
         self.fast_delay = fast_delay
 
     def click_safe(self, x, y):

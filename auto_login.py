@@ -1,4 +1,5 @@
 from time import sleep, time
+from commands import ClickSafeCommand
 
 
 class AutoLogin:
@@ -8,19 +9,23 @@ class AutoLogin:
         self.click_delay = click_delay
 
     def click_ch_button(self, nr):
-        self.ws.send_click_safe(*self.ws.config.ch[nr])
+        cmd = ClickSafeCommand(self.ws, *self.ws.config.ch[nr])
+        self.ws.execute_command(cmd)
 
     def click_ok_button(self):
-        self.ws.send_click_safe(*self.ws.config.ch_ok)
+        cmd = ClickSafeCommand(self.ws, *self.ws.config.ch_ok)
+        self.ws.execute_command(cmd)
 
     def click_play(self):
-        self.ws.send_click_safe(*self.ws.config.select_btn)
+        cmd = ClickSafeCommand(self.ws, *self.ws.config.select_btn)
+        self.ws.execute_command(cmd)
 
     def find_play_button(self):
         return self.ws.match_at_position(self.ws.config.select_btn, self.ws.config.stop_id)
 
     def click_play_button(self):
-        self.ws.send_click_safe(*self.ws.config.select_btn)
+        cmd = ClickSafeCommand(self.ws, *self.ws.config.select_btn)
+        self.ws.execute_command(cmd)
 
     def choose_channel(self):
         self.click_ch_button(4)

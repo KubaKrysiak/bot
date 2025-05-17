@@ -1,5 +1,6 @@
 from window_automation import WindowAutomation
 from fish_area import FishArea
+from commands import ClickSafeCommand, ClickFastCommand, KeyInputCommand
 import time
 
 class WindowSession:
@@ -53,8 +54,10 @@ class WindowSession:
     def find_color_mean(self, bgr_target_color):
         return self.vision.find_color_mean(self.fish_area, bgr_target_color)
 
-
     def click_fish(self):
         pos = self.find_fish()
         if pos:
             self.send_click_fast(*pos)
+
+    def execute_command(self, command):
+        command.execute()
