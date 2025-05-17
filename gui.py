@@ -6,9 +6,9 @@ import keyboard
 import json
 import subprocess
 
+from windows_manager import WindowsManager
 from tkinter import simpledialog
 from configurator import Configurator
-from windows_manager import WindowsManager
 
 ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme("blue")
@@ -213,14 +213,13 @@ class GUI:
             return False
 
     def run_test_script(self):
-        test_script_path = os.path.join(os.getcwd(), "test", "test.py")
-        test_dir = os.path.join(os.getcwd(), "test")
+        test_script_path = os.path.join(os.getcwd(), "test.py")
         if os.path.exists(test_script_path):
             def reader():
                 import subprocess
                 proc = subprocess.Popen(
                     ["python", "test.py"],
-                    cwd=test_dir,
+                    cwd=os.getcwd(),
                     stdout=subprocess.PIPE,
                     stderr=subprocess.STDOUT,
                     text=True
@@ -230,10 +229,10 @@ class GUI:
             threading.Thread(target=reader, daemon=True).start()
             print("test.py uruchomiony w tle")
         else:
-            print("Nie znaleziono test/test.py")
+            print("Nie znaleziono test.py")
 
     
-        def auto_login(self):
+    def auto_login(self):
         if not self.selected_config:
             if not self.choose_config():
                 return

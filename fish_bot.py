@@ -1,64 +1,61 @@
-import threading
-import win32con
-import win32api
-from time import sleep
-import time
+from time import time
 
 
 class FishBot:
-    """Klasa automatu wykonującego sekwencję akcji w oknie aplikacji"""
-    def __init__(self, window):
-        self.window = window
-        self.worms_count = 0
-        self.keyboard_lock = threading.Lock()
-        self.fishing_action = None
-        self.zlowione = 0
+    def __init__(self, window_session):
+        self.ws = window_session
+        self.worms_count = 400 * 8
+        self.action = 0
         self.time_acc = 0
         self.time_counter = 0
-        self.action = 0 
-
-    def send_key_input(self, key):
-        """Wysyła polecenie klawiatury do okna"""
-        print(f">>> Wysyłanie polecenia klawiatury: {key}")
-        self.window.send_key_input(key)
 
     def take_worm(self):
-        sleep(0.25)
-        self.worms_count += 1
-
-        # Wybierz slot na podstawie liczby użytych przedmiotów (co 50 użyć zmiana slotu)
-        key_to_press = str((self.worms_count // 50) + 1)
-        print(f">>> Używam przedmiot ze slotu {key_to_press}, łącznie użyto: {self.worms_count}")
-
-        if int(key_to_press) > 9:
-            print("!!! Wykorzystano wszystkie dostępne przedmioty (sloty 1-9)")
-            return "stop"
-
-        self.send_key_input(key_to_press)
-        return "continue"
+        self.ws.send_key_input(str(8 - (self.worms_count // 400) + 1))
 
     def cast_the_fishing_rod(self):
-        """Rozpoczyna główną akcję (rzucenie wędki)"""
-        print(">>> Wykonuję główną akcję (spacja)")
-        self.send_key_input(' ')
-
-    def find_fish(self):
-        """Wykrywa obiekt interakcji w oknie (dla kompatybilności wstecznej)"""
-        return self.window.find_fish()
-
-    def click(self, pos):
-        """Wykonuje szybkie kliknięcie w podanej pozycji"""
-        print(f">>> Kliknięcie w pozycji: {pos}")
-        self.window.click_relative_fast(*pos)
+        self.ws.send_key_input("space")
 
     def find_fish_window(self):
-        return self.window.find_fish_window()
-    
-    def get_focus(self):
-        self.window.get_focus()
+        return self.ws.find_color((216, 145, 49))
+
+    def find_fish(self):
+        return self.ws.find_color_mean((123, 88, 53))
+
+    def click_fish(self):
+        pos = self.find_fish()
+        if pos:
+            self.ws.send_click_fast(*pos)
+            return True
+        return False
 
     def wait(self, timee):
-        self.time_counter = time.time()
-        self.time_acc  = timee
+        self.time_counter = time()
+        self.time_acc = timee
         self.action += 1
-    
+
+    def do_fishing_action(self):
+        if self.action == 0:
+            self.take_worm()
+            self.wait(1)
+            print("Wziąłem robaka", self.time_counter)
+        elif self.action == 1 and time() - self.time_counter > self.time_acc:
+            self.cast_the_fishing_rod()
+            self.wait(1)
+            print("Wziąłem robaka", self.time_counter)
+        elif self.action == 2:
+            if self.find_fish_window():
+                self.action = 3
+        elif self.action == 3:
+            if self.find_fish_window():
+                if time() - self.time_counter > self.time_acc:
+                    if self.click_fish():
+                        gizmo = self.action
+                        self.wait(1)
+                        self.action = gizmo
+            else:
+                self.worms_count -= 1
+                if self.worms_count == 0:
+                    return True
+                self.wait(2)
+        elif self.action == 4 and time() - self.time_counter > self.time_acc:
+            self.action = 0

@@ -12,9 +12,12 @@ class Config:
 
         self.ch_ok = ch_ok
         self.ch = ch
+        # srodek select btn
         self.select_btn = select_btn
         self.name = name
+        # path do sleect btn
         self.stop_id = stop_id
+        # krotka left top right, bottom
         self.circle_region = circle_region
 
     def to_dict(self):
