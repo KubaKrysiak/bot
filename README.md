@@ -7,7 +7,10 @@ Autorzy:
 - Jakub Krysiak
 - Wojtek Cieślik
 
+Notka prawna:
 
+Program jest uruchamiany w środowisku testowym dołączonym do bota, dlatego nie łamie żadnych aktów prawnych
+.
 Cel:
 
 Celem projektu jest stworzenie programu do automatyzowania aplikacji okienkowych poprzez rozpoznawanie wzorów/kolorów i symulacji kliknięć klawiatury, myszy oraz innych operacji winapi.
@@ -47,6 +50,7 @@ Uruchomienie:
 
 -lub uruchom cmd jako administrator cd sciezka python gui.py
 
+![image](https://github.com/user-attachments/assets/7c8c9019-c471-4fe2-97e9-4d31ae3ec84d)
 
 3. 
 Instrukcja konfiguracji:
