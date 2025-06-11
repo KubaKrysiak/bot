@@ -31,13 +31,11 @@ class KeyboardAutomation:
         else:
             vk_code = value
             scan_code = None
+
+        sleep(0.01)
         keybd_event(vk_code, scan_code if scan_code is not None else 0, 0, 0)
-        sleep(0.007)
+        sleep(0.01)
+        if key == "space":
+            pyautogui.press('space')
         keybd_event(vk_code, scan_code if scan_code is not None else 0, KEYEVENTF_KEYUP, 0)
 
-
-ka = KeyboardAutomation()
-sleep(3)  
-ka.send_key_input('1')
-ka.send_key_input('1')
-ka.send_key_input('1')

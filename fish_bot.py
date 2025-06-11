@@ -60,6 +60,6 @@ class FishBot:
                 self.worms_count -= 1
                 if self.worms_count == 0:
                     return True
-                self.wait(2)
+                self.wait(4)
         elif self.action == 4 and time() - self.time_counter > self.time_acc:
             self.action = 0
