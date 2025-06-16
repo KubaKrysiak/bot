@@ -1,1 +1,0 @@
-uml analiza obiektowa pip requirements testy i  bledy poprawionad dokumentcja readme

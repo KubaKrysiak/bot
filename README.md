@@ -1,7 +1,3 @@
-Do zrobienia:
-Wojtek - przy 4 okienkach na raz są duże opoznienia przy lowieniu
-
-
 Autorzy:
 
 - Jakub Krysiak
@@ -49,6 +45,10 @@ Uruchomienie:
 -uruchom jako administrator run_admin.bat
 
 -lub uruchom cmd jako administrator cd sciezka python gui.py
+
+Test:
+
+- Zeby program dzialal trzeba wybrac odpowiednia konfiguracje, tytul okna, mozna jeszcze stworzyc wlasna konfiguracje, tworzy sie je po to, zeby program byl dostosowany do dowolnego interfejsu, mozna wybrac rozmiar okna, to sie wtedy wiecej okien zmiesci na ekranie. Sa domyslne konfiguracje zaczynajace sie od T900, t600, nazwa okna musi byc ustalona na tytul testu. W konfiguratorze trzeba wiedziec co klikac, sa zalaczone nizej odpowiednie punkty
 
 ![image](https://github.com/user-attachments/assets/7c8c9019-c471-4fe2-97e9-4d31ae3ec84d)
 
