@@ -48,7 +48,7 @@ Uruchomienie:
 
 Test:
 
-- Zeby program dzialal trzeba wybrac odpowiednia konfiguracje, tytul okna, mozna jeszcze stworzyc wlasna konfiguracje, tworzy sie je po to, zeby program byl dostosowany do dowolnego interfejsu, mozna wybrac rozmiar okna, to sie wtedy wiecej okien zmiesci na ekranie. Sa domyslne konfiguracje zaczynajace sie od T900, t600, nazwa okna musi byc ustalona na tytul testu. W konfiguratorze trzeba wiedziec co klikac, sa zalaczone nizej odpowiednie punkty
+- Zeby program dzialal trzeba wybrac odpowiednia konfiguracje, tytul okna, mozna jeszcze stworzyc wlasna konfiguracje, tworzy sie je po to, zeby program byl dostosowany do dowolnego interfejsu, mozna wybrac rozmiar okna, to sie wtedy wiecej okien zmiesci na ekranie. Sa domyslne konfiguracje zaczynajace sie od T900, t600, nazwa okna musi byc ustalona na tytul testu. W konfiguratorze trzeba wiedziec co klikac, sa zalaczone nizej odpowiednie punkty. Dalsze możliwości rozszerzenia to przystosowanie autologinu do dowolnego interejsu gui bo na razie jest tylko jeden specyficzny template i moze jakiś parser żeby można było wygodnie takie interfejs tekstowo definiowac.
 
 ![image](https://github.com/user-attachments/assets/7c8c9019-c471-4fe2-97e9-4d31ae3ec84d)
 
