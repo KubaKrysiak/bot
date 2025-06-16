@@ -1,0 +1,20 @@
+Command (commands.py) - Abstrakcyjna klasa bazowa dla komend z metodą execute
+ClickSafeCommand - Wykonuje bezpieczne kliknięcia myszą
+ClickFastCommand - Wykonuje szybkie kliknięcia myszą
+KeyInputCommand - Wykonuje komendy klawiatury
+Screen (screen.py) - Klasa singleton zarządzająca wymiarami i rozdzielczością ekranu
+Config (config.py) - Klasa konfiguracyjna przechowująca ustawienia takie jak wymiary okna, ustawienia kanałów i współrzędne regionów
+FishArea (fish_area.py) - Zarządza współrzędnymi obszaru łowienia i dostarcza metody do obliczania środków skanowania i promienia
+WindowAutomation (window_automation.py) - Obsługuje manipulację oknami (przesuwanie, zmiana rozmiaru, aktywacja itp.) używając Windows API
+WindowSession (window_session.py) - Zarządza sesją pojedyńczego okna, łącząc automatyzację okien, kontrolę myszy/klawiatury i możliwości wizyjne
+WindowsManager (windows_manager.py) - Zarządza wieloma oknami, obsługuje rozmieszczenie okien, automatyczne logowanie i operacje łowienia
+TestGame (test.py) - Testowa implementacja środowiska gry do testowania funkcjonalności bota
+MouseAutomation (mouse_automation.py) - Obsługuje operacje kontroli myszy z metodami bezpiecznego i szybkiego klikania
+KeyboardAutomation (keyboard_automation.py) - Obsługuje operacje klawiatury, w tym wysyłanie specjalnych klawiszy i kombinacji
+FishBot (fish_bot.py) - Główna klasa bota implementująca logikę i akcje łowienia
+BotVision (bot_vision.py) - Obsługuje zadania wizji komputerowej takie jak wykrywanie kolorów i przetwarzanie obrazu
+GUI (gui.py) - Klasa interfejsu użytkownika dostarczająca kontrolki do konfiguracji i obsługi bota
+TextRedirector - Klasa pomocnicza do przekierowywania tekstu do widgetu GUI
+ConfigBuilder (configurator.py) - Implementacja wzorca Builder do tworzenia obiektów Config
+Configurator (configurator.py) - Klasa pomocnicza do konfiguracji i zarządzania ustawieniami bota
+AutoLogin (auto_login.py) - Klasa odpowiedzialna za automatyczne logowanie do gry, wybór kanału i obsługę przycisków logowania
